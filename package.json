@@ -1,0 +1,12 @@
+{
+  "name": "santi",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "live-server --port=7000"
+  },
+  "author": "Santino Scavelli",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.1"
+  }
+}
