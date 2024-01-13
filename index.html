@@ -325,6 +325,20 @@
             <script src="assets/js/instafeed.min.js"></script>
             <script src="assets/js/spectragram.js"></script>
             <script src="assets/js/spectragram.min.js"></script>
+		<script>
+    // Funktion, um das Laden des Skripts zu verzögern
+    function loadScriptAfterDelay(src, delay) {
+        setTimeout(function() {
+            var script = document.createElement('script');
+            script.src = src;
+            document.body.appendChild(script);
+        }, delay);
+    }
+
+    // Verzögert das Laden des Social-Media-Widgets um 3000 Millisekunden (3 Sekunden)
+    loadScriptAfterDelay("//apps.elfsight.com/p/platform.js", 7000);
+</script>
+
         
 
 	</body>
