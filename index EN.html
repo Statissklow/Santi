@@ -2,7 +2,7 @@
 <!--
     Home santinoscavelli.de
 -->
-<html lang="de">
+<html lang="en">
     <!-- Start of HubSpot Embed Code -->
     <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/7896456.js"></script>
     <!-- End of HubSpot Embed Code -->
@@ -13,18 +13,18 @@
         <link rel="stylesheet" href="assets/css/main.css" />
         <style>
             h3 {
-                font-size: 2em; /* Hier kannst du die Schriftgröße anpassen */
+                font-size: 2em; /* Adjust the font size here */
             }
             .logo-container {
                 display: flex;
                 justify-content: space-around;
                 align-items: center;
-                background-color: #1F1E22; /* Hellgrauer Hintergrund */
+                background-color: #1F1E22; /* Light gray background */
                 padding: 20px 10%;
                 animation: fadeIn 2s ease-in-out;
             }
             .logo-container img {
-                max-height: 50px; /* Passen Sie die Größe nach Bedarf an */
+                max-height: 50px; /* Adjust size as needed */
                 display: block;
                 opacity: 0;
                 animation: fadeInLogo 2s ease-in-out forwards;
@@ -67,11 +67,13 @@
                 align-items: center;
             }
             .language-switcher a {
-                text-decoration: none; /* Remove the red underline */
+                text-decoration: none; /* Remove underline on hover */
+                color: inherit; /* Maintain text color */
             }
             .language-switcher img {
                 height: 40px; /* Adjust the size as needed */
                 cursor: pointer;
+                transition: none; /* Remove any hover animations */
             }
             /* Ensure the icon is visible in mobile view */
             @media (max-width: 768px) {
@@ -89,38 +91,71 @@
 
             <!-- Header -->
             <header id="header">
-                <!-- Add language switcher here -->
+                <!-- Language switcher -->
                 <div class="language-switcher">
-                    <!-- You can use an image icon for a flag or just text as shown below -->
-                    <a href="index EN.html"><img src="images/Uk Flag.png" alt="Switch to English" /></a>
+                    <!-- Language switcher icon or text -->
+                    <a href="index.html"><img src="images/German Flag.png" alt="Switch to German" /></a>
                 </div>
 
                 <nav id="nav">
                     <ul>
                         <li><a href="index.html">Home</a></li>
                         <li>
-                            <a href="#">Menü</a>
+                            <a href="#">Menu</a>
                             <ul>
-                                <li><a href="ueber santino.html">Über Santino</a></li>
-                                <li><a href="lesson.html">Lesson</a></li>
-                                <li><a href="recording.html">Recording</a></li>
+                                <li><a href="ueber santino EN.html">About Santino</a></li>
+                                <li><a href="lesson EN.html">Lesson</a></li>
+                                <li><a href="Recording EN.html">Recording</a></li>
                                 <li><a href="booking.html">Media</a></li>
                                 <li>
-                                    <a href="#">Projekte  &#x25B6;</a> <!-- Pfeil nach rechts -->
+                                    <a href="#">Projects  &#x25B6;</a> <!-- Right arrow -->
                                     <ul>
-                                        <li><a href="Pour les Amis.html">Pour les Amis</a></li>
-                                        <li><a href="Pulse Project.html">Pulse Project</a></li>
-                                        <li><a href="Tambour Duo.html">Tambour Duo</a></li>
-                                        <li><a href="Monkey Beatz.html">Monkey Beatz</a></li>
+                                        <li><a href="Pour les Amis EN.html">Pour les Amis</a></li>
+                                        <li><a href="Pulse Project EN.html">Pulse Project</a></li>
+                                        <li><a href="Tambour Duo EN.html">Tambour Duo</a></li>
+                                        <li><a href="Monkey Beatz EN.html">Monkey Beatz</a></li>
                                         <li><a href="https://www.anikanilles.com/nevell_rd_2024/">Nevell</a></li>
                                     </ul>
                                 </li>
                             </ul>
                         </li>
-                        <li><a href="elements.html" class="button primary">Kontakt</a></li>
+                        <li><a href="elements EN.html" class="button primary">Contact</a></li>
                     </ul>
                 </nav>
             </header>
+            
+            <!-- Other sections and content remain unchanged -->
+
+            <!-- Scripts -->
+            <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/js/jquery.scrolly.min.js"></script>
+            <script src="assets/js/jquery.dropotron.min.js"></script>
+            <script src="assets/js/jquery.scrollex.min.js"></script>
+            <script src="assets/js/browser.min.js"></script>
+            <script src="assets/js/breakpoints.min.js"></script>
+            <script src="assets/js/util.js"></script>
+            <script src="assets/js/main.js"></script>
+            <script src="assets/js/instafeed.js"></script>
+            <script src="assets/js/instafeed.min.js"></script>
+            <script src="assets/js/spectragram.js"></script>
+            <script src="assets/js/spectragram.min.js"></script>
+            <script>
+                // Function to delay script loading
+                function loadScriptAfterDelay(src, delay) {
+                    setTimeout(function() {
+                        var script = document.createElement('script');
+                        script.src = src;
+                        document.body.appendChild(script);
+                    }, delay);
+                }
+
+                // Delay loading of social media widget by 15000 milliseconds (15 seconds)
+                loadScriptAfterDelay("//apps.elfsight.com/p/platform.js", 15000);
+            </script>
+        </div>
+    </body>
+</html>
+
 
             <!-- Banner -->
                 <section id="banner">
@@ -129,7 +164,7 @@
                             <h2>Santino Scavelli</h2>
                             <h4><p>Rhythm, Innovation, Tradition</p></h4>
                         </header>
-                        <span class="image"><img src="images/profil.png" alt="Profilbild von Santino Scavelli" /></span>
+                        <span class="image"><img src="images/profil.png" alt="Profile picture of Santino Scavelli" /></span>
                     </div>
                     <a href="#one" class="goto-next scrolly">Next</a>
                 </section>
@@ -137,7 +172,7 @@
             <!-- One -->
                 <section id="one" class="spotlight style1 bottom">
                     <div class="content">
-                        <span class="image fit main"><img src="images/pic02.jpg" alt="Santino Scavelli mit Becken in der Hand, weißen Hintergrund" /></span>
+                        <span class="image fit main"><img src="images/pic02.jpg" alt="Santino Scavelli holding a cymbal, white background" /></span>
                         <header>         
                             <h2><center>VIDEOS</center></h2>
                         </header>
@@ -159,8 +194,6 @@
                     <a href="#logo-section" class="goto-next scrolly">Next</a>
                 </section>
 
-          
-
             <!-- Logos -->
                 <section id="logo-section" class="wrapper style2 special fade">
                     <div class="logo-container">
@@ -174,17 +207,17 @@
                     </div>
                 </section>
 
-            <!-- Über Santino -->
+            <!-- About Santino -->
                 <section id="three" class="spotlight style3 right">
-                    <span class="image fit main bottom"><img src="images/pic04.jpg" alt="Santino am Drumset, Jazzopen Bühne" /></span>
+                    <span class="image fit main bottom"><img src="images/pic04.jpg" alt="Santino on drums, Jazzopen stage" /></span>
                     <div class="content">
                         <header>
-                            <h2>Über Santino</h2>
+                            <h2>About Santino</h2>
                         </header>
-                        <p>Santino Scavelli ist einer der aufregendsten Newcomer der Weltmusik-Szene. Mit seinem einzigartigen Stil und Können hat er bereits mehrere renommierte Auszeichnungen erhalten, darunter den <strong>Framedrum Award 2018</strong>, den <strong>Youtube Early Career Award 2019 </strong> und den <strong>Meinl Outstanding Performance Award 2023 </strong>.</p>
-                        <p><strong>Als Musical Director am Nationaltheater Mannheim </strong> und durch seine Zusammenarbeit mit Künstlern wie <strong>Anika Nilles, Zohar Fresco und Andrea Piccioni </strong> hat er international Anerkennung gefunden. Seine Projekte wie das "Pulse Project" und "Pour les Amis" zeigen seine Vielseitigkeit und kreative Vision.</p>
+                        <p>Santino Scavelli is one of the most exciting newcomers in the world music scene. With his unique style and skill, he has already received several prestigious awards, including the <strong>Framedrum Award 2018</strong>, the <strong>YouTube Early Career Award 2019</strong>, and the <strong>Meinl Outstanding Performance Award 2023</strong>.</p>
+                        <p><strong>As a Musical Director at the National Theater Mannheim</strong> and through his collaborations with artists such as <strong>Anika Nilles, Zohar Fresco, and Andrea Piccioni</strong>, he has gained international recognition. His projects like the "Pulse Project" and "Pour les Amis" showcase his versatility and creative vision.</p>
                         <ul class="actions">
-                            <li><a href="ueber santino.html" class="button">Mehr..</a></li>     
+                            <li><a href="ueber santino.html" class="button">More..</a></li>     
                         </ul>
                     </div>
                     <a href="#four" class="goto-next scrolly">Next</a>
@@ -192,22 +225,19 @@
 
             <!-- Lesson -->
                 <section id="four" class="spotlight style2 left">
-                    <span class="image fit main"><img src="images/pic03.jpg" alt="Santino am Hybridset, spielend, energetisch" /></span>
+                    <span class="image fit main"><img src="images/pic03.jpg" alt="Santino at hybrid set, playing energetically" /></span>
                     <div class="content">
                         <header>
-                            <h2>Unterricht&nbsp;</h2>
+                            <h2>Lesson&nbsp;</h2>
                             
                         </header>
                         <p>
-                       
-                           
-<p>Mit einem Doppelstudium in <strong>Trossingen</strong> (Drums und Latin Percussion) und an der <strong>Popakademie</strong> (Orientalische Percussion) hat Santino Scavelli ein tiefes Verständnis für rhythmische Kulturen weltweit entwickelt.</p>
+                            <p>With a double degree in <strong>Trossingen</strong> (Drums and Latin Percussion) and at the <strong>Pop Academy</strong> (Oriental Percussion), Santino Scavelli has developed a deep understanding of rhythmic cultures worldwide.</p>
 
-<p>Mit über <strong>15 Jahren Unterrichtserfahrung</strong> im Einzel- und Gruppenunterricht, gesammelt an <strong>Musikakademien und durch Workshopreihen deutschlandweit</strong>, bietet Santino Scavelli inspirierenden Unterricht für alle, die in die Welt des Rhythmus eintauchen möchten.</p>
-
+                            <p>With over <strong>15 years of teaching experience</strong> in individual and group lessons, gathered at <strong>music academies and through workshop series across Germany</strong>, Santino Scavelli offers inspiring lessons for anyone wishing to dive into the world of rhythm.</p>
                         </p>
                         <ul class="actions">
-                            <li><a href="lesson.html" class="button">Mehr...</a></li>
+                            <li><a href="lesson.html" class="button">More...</a></li>
                         </ul>
                     </div>
                     <a href="#two" class="goto-next scrolly">Next</a>
@@ -215,20 +245,19 @@
 
             <!-- Drums & Percussion Recording -->
                 <section id="two" class="spotlight style1 right">
-                    <span class="image fit main"><img src="images/pic11.jpg" alt="Fotoshooting Santino, elecronic, percussion, mallets" /></span>
+                    <span class="image fit main"><img src="images/pic11.jpg" alt="Photoshoot Santino, electronic, percussion, mallets" /></span>
                     <div class="content">
                         <header>
                             <h2>Studio &amp; Recording&nbsp; &nbsp;&nbsp;</h2>
                             
                         </header>
                          
-                          <p>Santino Scavelli ist ein gefragter Studio-Musiker. In seinem Studio nimmt er für renommierte Künstler (Anika Nilles, Viktor) ihre Alben auf – sei es Percussion, Drums oder beides.</p>
+                          <p>Santino Scavelli is a sought-after studio musician. In his studio, he records albums for renowned artists (Anika Nilles, Viktor) – whether it's percussion, drums, or both.</p>
 
-<p>Besonders gefragt ist sein selbstgebautes hybrides Set, das er <strong>"Split-Set"</strong> nennt. Dieses eignet sich hervorragend für <strong>organisch-elektronische Beats</strong> sowie für folkloristische Musik. Macht euch selbst ein Bild davon und klickt unten auf "Mehr".</p>
-
+                          <p>His custom-built hybrid set, which he calls the <strong>"Split-Set"</strong>, is particularly in demand. It is ideal for <strong>organic-electronic beats</strong> as well as for folkloric music. See for yourself by clicking "More" below.</p>
                         </p>
                         <ul class="actions">
-                            <li><a href="Recording.html" class="button">Mehr..</a></li>  
+                            <li><a href="Recording.html" class="button">More..</a></li>  
                         </ul>
                     </div>
                 </section>
@@ -237,7 +266,7 @@
                <section id="five" class="wrapper style2 special fade">
     <div class="container">
         <header>
-            <h2>Willst du noch mehr wissen?</h2>
+            <h2>Want to know more?</h2>
 			<ul class="icons">
 						<li><a href="https://x.com/Statissklow" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
 						<li><a href="https://www.facebook.com/santino.scavelli/" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
@@ -250,7 +279,7 @@
 					<ul class="copyright">
 					
 					</ul>
-            <p>..oder gib hier deine E-Mail-Adresse ein und du wirst regelmäßig über News, Konzerte und Online Events informiert.</p>
+            <p>..or enter your email address here, and you will be regularly informed about news, concerts, and online events.</p>
         </header>
         <form action="https://tinyletter.com/Statissklow" method="post" target="popupwindow" onsubmit="window.open('https://tinyletter.com/Statissklow', 'popupwindow', 'scrollbars=yes,width=800,height=600');return true">
             <div class="row gtr-uniform gtr-50">
@@ -267,13 +296,13 @@
             <!-- Footer -->
                 <footer id="footer">
                     <ul class="copyright">
-                        <li><a href="Impressum.html">Impressum</a></li>
-                        <li><a href="Datenschutzerklärung.html">DSGVO</a></li>
+                        <li><a href="Impressum.html">Imprint</a></li>
+                        <li><a href="Datenschutzerklärung.html">GDPR</a></li>
                     </ul>
                     <header>
                         <h2></h2> 
-                        <h5>Bildernachweis</h5>
-                        <p>Der Reihe nach: Pic. 1-5</p>
+                        <h5>Image credits</h5>
+                        <p>In order: Pic. 1-5</p>
                     </header>
                     <ul class="copyright">
                         <li><a href="https://redler.myportfolio.com/">Pic. 1-3</a></li>
@@ -285,7 +314,7 @@
         </div>
 
         <!-- Scripts -->
-              <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/js/jquery.min.js"></script>
             <script src="assets/js/jquery.scrolly.min.js"></script>
             <script src="assets/js/jquery.dropotron.min.js"></script>
             <script src="assets/js/jquery.scrollex.min.js"></script>
@@ -298,7 +327,7 @@
             <script src="assets/js/spectragram.js"></script>
             <script src="assets/js/spectragram.min.js"></script>
         <script>
-            // Funktion, um das Laden des Skripts zu verzögern
+            // Function to delay script loading
             function loadScriptAfterDelay(src, delay) {
                 setTimeout(function() {
                     var script = document.createElement('script');
@@ -307,9 +336,8 @@
                 }, delay);
             }
 
-            // Verzögert das Laden des Social-Media-Widgets um 15000 Millisekunden (15 Sekunden)
+            // Delays loading of the social media widget by 15000 milliseconds (15 seconds)
             loadScriptAfterDelay("//apps.elfsight.com/p/platform.js", 15000);
         </script>
-        </div>
     </body>
 </html>
