@@ -1,0 +1,88 @@
+﻿
+> musician_portal@0.1.0 lint
+> eslint
+
+
+C:\Users\sscav\.gemini\antigravity\scratch\musician_portal\prisma\seed.js
+  1:26  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  2:16  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+C:\Users\sscav\.gemini\antigravity\scratch\musician_portal\src\app\admin\page.tsx
+    90:21   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+    99:23   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   110:45   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   117:48   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   124:88   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   132:21   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   142:90   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   169:61   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   177:30   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   182:54   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   194:56   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   220:46   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   221:42   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   222:44   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   223:42   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   237:50   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   250:22   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   279:48   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   282:54   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   286:96   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   292:41   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   294:15   warning  'filesByCategory' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   294:32   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   295:44   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   296:42   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   297:44   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   298:44   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   301:48   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   310:43   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   334:36   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   370:47   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   373:51   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   398:36   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   409:80   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   435:59   warning  'url' is assigned a value but never used              @typescript-eslint/no-unused-vars
+   439:58   warning  'e' is defined but never used                         @typescript-eslint/no-unused-vars
+   814:79   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   814:87   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   837:58   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   855:78   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   857:89   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   860:78   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   862:89   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   865:78   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   867:89   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+   870:76   error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  1004:215  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+
+C:\Users\sscav\.gemini\antigravity\scratch\musician_portal\src\app\page.tsx
+  219:61  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  219:71  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\sscav\.gemini\antigravity\scratch\musician_portal\src\app\portal\page.tsx
+   68:54  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  366:36  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\sscav\.gemini\antigravity\scratch\musician_portal\src\app\projects\pour-les-amis\page.tsx
+  16:68  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  16:82  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\sscav\.gemini\antigravity\scratch\musician_portal\src\app\recording\page.tsx
+  51:127  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  51:137  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\sscav\.gemini\antigravity\scratch\musician_portal\src\components\DrumHubPortalReference.tsx
+  497:36  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\sscav\.gemini\antigravity\scratch\musician_portal\src\components\Navigation.tsx
+  51:11  warning  'pathname' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\sscav\.gemini\antigravity\scratch\musician_portal\src\lib\auth.ts
+  66:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\sscav\.gemini\antigravity\scratch\musician_portal\src\types\next-auth.d.ts
+  1:8  warning  'NextAuth' is defined but never used  @typescript-eslint/no-unused-vars
+
+Ô£û 61 problems (56 errors, 5 warnings)
+

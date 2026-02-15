@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("STUDENT") // "ADMIN" or "STUDENT"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  classLevelId String?
+  classLevel   ClassLevel? @relation(fields: [classLevelId], references: [id])
+}
+
+model ClassLevel {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g., "Beginner", "Advanced", "Masterclass"
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  students User[]
+  lessons  Lesson[]
+}
+
+model Lesson {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  videoUrl     String?  // YouTube/Vimeo link or internal path
+  thumbnailUrl String?
+  order        Int      @default(0) // For sorting lessons
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  classLevelId String
+  classLevel   ClassLevel @relation(fields: [classLevelId], references: [id])
+  materials    Material[]
+}
+
+model Material {
+  id        String   @id @default(cuid())
+  title     String
+  fileUrl   String   // Path to PDF/MP3
+  type      String   // "PDF", "AUDIO", "SHEET_MUSIC"
+  createdAt DateTime @default(now())
+
+  // Relations
+  lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
+}
