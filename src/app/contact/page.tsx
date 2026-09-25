@@ -10,25 +10,25 @@ export default function Contact() {
         {
             icon: Calendar,
             title: "Booking & Events",
-            desc: "Live-Drums, Studio-Sessions, Events",
+            desc: "Live Drums, Studio Sessions, Events",
             action: "booking@santinoscavelli.de",
-            cta: "Anfrage senden",
+            cta: "Send Inquiry",
             delay: 0.2
         },
         {
             icon: GraduationCap,
-            title: "Unterricht & Coaching",
-            desc: "Privatunterricht, Workshops, Masterclasses",
+            title: "Lessons & Education",
+            desc: "Private Lessons, Workshops, Masterclasses",
             action: "lessons@santinoscavelli.de",
-            cta: "Termin vereinbaren",
+            cta: "Book Session",
             delay: 0.3
         },
         {
             icon: Mail,
-            title: "Management & Presse",
-            desc: "Presseanfragen, Interviews, Kooperationen",
+            title: "Management & General",
+            desc: "Press, Interviews, Collaborations",
             action: "info@santinoscavelli.de",
-            cta: "Kontaktieren",
+            cta: "Get in Touch",
             delay: 0.4
         }
     ];
@@ -58,10 +58,10 @@ export default function Contact() {
                 <div className="relative z-10 text-center px-4">
                     <FadeIn>
                         <h1 className="text-5xl md:text-7xl font-bold mb-4 tracking-tight drop-shadow-2xl">
-                            Kontakt
+                            Contact
                         </h1>
                         <p className="text-xl md:text-2xl text-gray-300 font-light tracking-wide">
-                            Lass uns was zusammen starten
+                            Let&apos;s create something together
                         </p>
                     </FadeIn>
                 </div>
@@ -91,7 +91,7 @@ export default function Contact() {
             <section className="py-20 bg-[#1c1d26]">
                 <div className="container mx-auto px-4 text-center">
                     <FadeIn delay={0.5}>
-                        <h2 className="text-3xl font-bold mb-12">Folge mir</h2>
+                        <h2 className="text-3xl font-bold mb-12">Follow Me</h2>
                         <div className="flex justify-center gap-8 md:gap-16">
                             {socialLinks.map((social, index) => (
                                 <a

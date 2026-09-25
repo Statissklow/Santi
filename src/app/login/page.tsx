@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -24,7 +25,18 @@ export default function LoginPage() {
             });
 
             if (!res?.error) {
-                router.push("/portal");
+                // Check role to direct to /admin or /portal
+                try {
+                    const sessionRes = await fetch("/api/auth/session");
+                    const sessionData = await sessionRes.json();
+                    if (sessionData?.user?.role === "ADMIN") {
+                        router.push("/admin");
+                    } else {
+                        router.push("/portal");
+                    }
+                } catch {
+                    router.push("/portal");
+                }
                 router.refresh();
             } else {
                 setError("Ungültige Email oder Passwort");
@@ -45,7 +57,7 @@ export default function LoginPage() {
             alignItems: "center",
             justifyContent: "center",
             fontFamily: "'Segoe UI', system-ui, sans-serif",
-            padding: "20px"
+            padding: "100px 20px 40px 20px"
         }}>
             <div style={{
                 background: "rgba(255,255,255,0.03)",
@@ -108,10 +120,26 @@ export default function LoginPage() {
                         />
                     </div>
 
-                    <div style={{ marginBottom: "32px" }}>
-                        <label style={{ color: "rgba(255,255,255,0.5)", fontSize: "12px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "1px", display: "block", marginBottom: "8px" }}>
-                            Passwort
-                        </label>
+                    <div style={{ marginBottom: "28px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                            <label style={{ color: "rgba(255,255,255,0.5)", fontSize: "12px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "1px" }}>
+                                Passwort
+                            </label>
+                            <Link
+                                href="/reset-password"
+                                style={{
+                                    color: "#e44c65",
+                                    fontSize: "12px",
+                                    textDecoration: "none",
+                                    fontWeight: "500",
+                                    transition: "opacity 0.2s"
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.opacity = "0.8"}
+                                onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                            >
+                                Passwort vergessen?
+                            </Link>
+                        </div>
                         <input
                             type="password"
                             required

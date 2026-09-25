@@ -11,55 +11,106 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String?
-  role      String   @default("STUDENT") // "ADMIN" or "STUDENT"
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String       @id @default(cuid())
+  email            String       @unique
+  password         String
+  name             String?
+  role             String       @default("STUDENT") // "ADMIN" or "STUDENT"
+  instrument       String?      @default("Schlagzeug")
+  phone            String?
+  notes            String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 
-  // Relations
-  classLevelId String?
-  classLevel   ClassLevel? @relation(fields: [classLevelId], references: [id])
+  // Student relations
+  assignedLessons  Lesson[]     @relation("StudentLessons")
+  lessonLogs       LessonLog[]  @relation("StudentLogs")
+  loginLogs        LoginLog[]
+  lastLoginAt      DateTime?
+
+  // Optional legacy relation
+  classLevelId     String?
+  classLevel       ClassLevel?  @relation(fields: [classLevelId], references: [id])
 }
 
 model ClassLevel {
   id          String   @id @default(cuid())
-  name        String   @unique // e.g., "Beginner", "Advanced", "Masterclass"
+  name        String   @unique
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  // Relations
-  students User[]
-  lessons  Lesson[]
+  students    User[]
 }
 
 model Lesson {
-  id           String   @id @default(cuid())
+  id           String      @id @default(cuid())
   title        String
   description  String?
-  videoUrl     String?  // YouTube/Vimeo link or internal path
-  thumbnailUrl String?
-  order        Int      @default(0) // For sorting lessons
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Relations
-  classLevelId String
-  classLevel   ClassLevel @relation(fields: [classLevelId], references: [id])
+  notes        String?
+  instrument   String?     @default("Schlagzeug")
+  order        Int         @default(0)
+  isGlobal     Boolean     @default(true) // Visible to all students if true
+  studentId    String?     // Specific student ID if targeted
+  student      User?       @relation("StudentLessons", fields: [studentId], references: [id], onDelete: SetNull)
   materials    Material[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 model Material {
   id        String   @id @default(cuid())
   title     String
-  fileUrl   String   // Path to PDF/MP3
-  type      String   // "PDF", "AUDIO", "SHEET_MUSIC"
+  fileUrl   String
+  category  String   @default("pdf") // "pdf", "audio", "video"
+  source    String   @default("upload")
+  size      String?
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
-
-  // Relations
-  lessonId String
-  lesson   Lesson @relation(fields: [lessonId], references: [id])
 }
+
+model LessonLog {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     User     @relation("StudentLogs", fields: [studentId], references: [id], onDelete: Cascade)
+  date        DateTime @default(now())
+  status      String   @default("PRESENT") // "PRESENT", "ABSENT", "EXCUSED"
+  topic       String?  // Was wurde gemacht?
+  homework    String?  // Hausaufgaben / Uebefokus
+  notes       String?  // Zusaetzliche Notiz
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SamplePackLead {
+  id        String   @id @default(cuid())
+  email     String
+  name      String?
+  role      String?
+  genre     String?
+  daw       String?
+  packName  String   @default("SYNTHESIS")
+  createdAt DateTime @default(now())
+}
+
+model Offer {
+  id        String   @id @default(cuid())
+  icon      String   @default("🎙️")
+  title     String
+  desc      String
+  cta       String   @default("Anfragen")
+  link      String   @default("/#contact")
+  active    Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LoginLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+

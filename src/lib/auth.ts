@@ -41,6 +41,23 @@ export const authOptions: NextAuthOptions = {
                     return null;
                 }
 
+                // Record login timestamp & history
+                const now = new Date();
+                try {
+                    await prisma.user.update({
+                        where: { id: user.id },
+                        data: { lastLoginAt: now },
+                    });
+                    await prisma.loginLog.create({
+                        data: {
+                            userId: user.id,
+                            createdAt: now,
+                        },
+                    });
+                } catch (logErr) {
+                    console.error("Error recording login log:", logErr);
+                }
+
                 return {
                     id: user.id + "",
                     email: user.email,
