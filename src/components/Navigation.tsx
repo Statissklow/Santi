@@ -111,8 +111,8 @@ export function Navigation() {
                         </div>
                     </div>
 
-                    {/* Middle: Menü, Projekte, Sample Packs */}
-                    <nav className="hidden lg:flex items-center ml-5 xl:ml-8 gap-4 xl:gap-7 2xl:gap-8 shrink-0">
+                    {/* Middle / Right: Menü, Projekte, Sample Packs pushed right */}
+                    <nav className="hidden lg:flex items-center ml-auto gap-4 xl:gap-7 2xl:gap-8 shrink-0">
                         {navItems.map((link) => (
                             <div key={link.name} className="relative group shrink-0">
                                 {link.submenu ? (
@@ -150,8 +150,8 @@ export function Navigation() {
                         ))}
                     </nav>
 
-                    {/* Right: Action Buttons (Kontakt, Student Portal, Admin) with guaranteed separation */}
-                    <div className="hidden lg:flex items-center ml-auto pl-8 xl:pl-12 shrink-0">
+                    {/* Right: Action Buttons (Kontakt, Student Portal, Admin) */}
+                    <div className="hidden lg:flex items-center pl-6 xl:pl-8 shrink-0">
                         {/* Elegant vertical separator between page links and action buttons */}
                         <div className="h-5 w-px bg-white/20 mr-4 xl:mr-6" />
 

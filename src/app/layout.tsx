@@ -37,7 +37,14 @@ export const metadata: Metadata = {
   title: "Santino Scavelli - Rhythm, Innovation, Tradition",
   description: "Musician, Educator, and Producer.",
   icons: {
-    icon: "/favicon.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.png", type: "image/png", sizes: "48x48" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
 };
 
