@@ -31,7 +31,11 @@ import {
     Sparkles,
     ExternalLink,
     LogIn,
-    Activity
+    Activity,
+    LayoutGrid,
+    List,
+    Table as TableIcon,
+    X
 } from "lucide-react";
 
 // Accent & Palette
@@ -166,7 +170,10 @@ export default function AdminDashboard() {
 
     // Lesson creation & editing
     const [showLessonModal, setShowLessonModal] = useState(false);
+    const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
     const [editingLessonId, setEditingLessonId] = useState<string | null>(null);
+    const [lessonViewMode, setLessonViewMode] = useState<"grid" | "compact" | "table">("grid");
+    const [lessonSearch, setLessonSearch] = useState("");
     const [lessonForm, setLessonForm] = useState({
         title: "",
         description: "",
@@ -249,6 +256,15 @@ export default function AdminDashboard() {
         }
     }, [status, session]);
 
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem("santi_lesson_view_mode");
+            if (saved === "grid" || saved === "compact" || saved === "table") {
+                setLessonViewMode(saved);
+            }
+        } catch (_) {}
+    }, []);
+
     // Student CRUD
     const handleSaveStudent = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -308,6 +324,32 @@ export default function AdminDashboard() {
     };
 
     // Lesson CRUD
+    const handleOpenNewLesson = () => {
+        setEditingLesson(null);
+        setEditingLessonId(null);
+        setLessonForm({
+            title: "",
+            description: "",
+            notes: "",
+            instrument: "Schlagzeug",
+            assignee: "ALL",
+        });
+        setShowLessonModal(true);
+    };
+
+    const handleOpenEditLesson = (lesson: Lesson) => {
+        setEditingLesson(lesson);
+        setEditingLessonId(lesson.id);
+        setLessonForm({
+            title: lesson.title,
+            description: lesson.description || "",
+            notes: lesson.notes || "",
+            instrument: lesson.instrument || "Schlagzeug",
+            assignee: lesson.isGlobal ? "ALL" : (lesson.studentId || "ALL"),
+        });
+        setShowLessonModal(true);
+    };
+
     const handleSaveLesson = async (e: React.FormEvent) => {
         e.preventDefault();
         setLessonFormLoading(true);
@@ -316,9 +358,9 @@ export default function AdminDashboard() {
         const studentId = isGlobal ? null : lessonForm.assignee;
 
         try {
-            if (editingLessonId && showLessonModal) {
+            if (editingLesson) {
                 // Update basic lesson info
-                const res = await fetch(`/api/lessons/${editingLessonId}`, {
+                const res = await fetch(`/api/lessons/${editingLesson.id}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -332,8 +374,13 @@ export default function AdminDashboard() {
                 });
                 if (res.ok) {
                     const updated = await res.json();
-                    setLessons(prev => prev.map(l => l.id === updated.id ? { ...l, ...updated } : l));
+                    setLessons(prev => prev.map(l => l.id === updated.id ? { ...l, ...updated, files: l.files } : l));
+                    setEditingLesson(null);
+                    setEditingLessonId(null);
                     setShowLessonModal(false);
+                } else {
+                    const errData = await res.json();
+                    alert(errData.error || "Fehler beim Aktualisieren der Lektion");
                 }
             } else {
                 // Create
@@ -354,10 +401,14 @@ export default function AdminDashboard() {
                     setLessons(prev => [created, ...prev]);
                     setShowLessonModal(false);
                     setEditingLessonId(created.id); // Open editor immediately to add materials
+                } else {
+                    const errData = await res.json();
+                    alert(errData.error || "Fehler beim Erstellen der Lektion");
                 }
             }
         } catch (err) {
             console.error("Error saving lesson:", err);
+            alert("Ein Fehler ist beim Speichern der Lektion aufgetreten.");
         } finally {
             setLessonFormLoading(false);
         }
@@ -371,6 +422,10 @@ export default function AdminDashboard() {
             if (res.ok) {
                 setLessons(prev => prev.filter(l => l.id !== id));
                 if (editingLessonId === id) setEditingLessonId(null);
+                if (editingLesson?.id === id) {
+                    setEditingLesson(null);
+                    setShowLessonModal(false);
+                }
             }
         } catch (err) {
             console.error("Error deleting lesson:", err);
@@ -414,10 +469,13 @@ export default function AdminDashboard() {
                     const newMat = await matRes.json();
                     setLessons(prev => prev.map(l => {
                         if (l.id === lessonId) {
-                            return { ...l, files: [...l.files, newMat] };
+                            return { ...l, files: [...(l.files || []), newMat] };
                         }
                         return l;
                     }));
+                    if (editingLesson && editingLesson.id === lessonId) {
+                        setEditingLesson(prev => prev ? { ...prev, files: [...(prev.files || []), newMat] } : null);
+                    }
                 }
             } catch (err) {
                 console.error("File upload error:", err);
@@ -443,6 +501,9 @@ export default function AdminDashboard() {
                     }
                     return l;
                 }));
+                if (editingLesson && editingLesson.id === lessonId) {
+                    setEditingLesson(prev => prev ? { ...prev, files: prev.files.filter(f => f.id !== materialId) } : null);
+                }
             }
         } catch (err) {
             console.error("Error deleting material:", err);
@@ -572,9 +633,27 @@ export default function AdminDashboard() {
     );
 
     const filteredLessons = lessons.filter(l => {
-        if (lessonFilter === "ALL") return true;
-        if (lessonFilter === "GLOBAL") return l.isGlobal;
-        return l.studentId === lessonFilter;
+        const matchesFilter =
+            lessonFilter === "ALL"
+                ? true
+                : lessonFilter === "GLOBAL"
+                ? l.isGlobal
+                : l.studentId === lessonFilter;
+
+        if (!matchesFilter) return false;
+
+        if (lessonSearch.trim()) {
+            const q = lessonSearch.toLowerCase();
+            const inTitle = (l.title || "").toLowerCase().includes(q);
+            const inDesc = (l.description || "").toLowerCase().includes(q);
+            const inNotes = (l.notes || "").toLowerCase().includes(q);
+            const inInst = (l.instrument || "").toLowerCase().includes(q);
+            const inStudent = (l.studentName || "").toLowerCase().includes(q);
+            const inFiles = l.files?.some(f => (f.name || "").toLowerCase().includes(q));
+            return inTitle || inDesc || inNotes || inInst || inStudent || inFiles;
+        }
+
+        return true;
     });
 
     const filteredLogs = logs.filter(l => {
@@ -760,11 +839,7 @@ export default function AdminDashboard() {
                                             </button>
 
                                             <button
-                                                onClick={() => {
-                                                    setEditingLessonId(null);
-                                                    setLessonForm({ title: "", description: "", notes: "", instrument: "Schlagzeug", assignee: "ALL" });
-                                                    setShowLessonModal(true);
-                                                }}
+                                                onClick={handleOpenNewLesson}
                                                 className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 text-left transition-all"
                                             >
                                                 <div className="w-10 h-10 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">
@@ -1016,29 +1091,102 @@ export default function AdminDashboard() {
                             {/* TAB 3: LEKTIONEN VERWALTEN */}
                             {activeTab === "lektionen" && (
                                 <div className="space-y-6 max-w-7xl mx-auto">
+                                    {/* Header */}
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                         <div>
                                             <h1 className="text-2xl font-bold text-white tracking-tight">Lektionen & Material</h1>
-                                            <p className="text-sm text-gray-400">Erstelle Lektionen und lade PDFs, Audio und Videos hoch.</p>
+                                            <p className="text-sm text-gray-400">Erstelle, bearbeite Lektionen und lade PDFs, Audio und Videos hoch.</p>
                                         </div>
                                         <button
-                                            onClick={() => {
-                                                setEditingLessonId(null);
-                                                setLessonForm({ title: "", description: "", notes: "", instrument: "Schlagzeug", assignee: "ALL" });
-                                                setShowLessonModal(true);
-                                            }}
-                                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#e44c65] text-white text-sm font-semibold shadow-lg hover:bg-[#c43c52] transition-colors"
+                                            onClick={handleOpenNewLesson}
+                                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#e44c65] text-white text-sm font-semibold shadow-lg hover:bg-[#c43c52] transition-colors shrink-0"
                                         >
                                             <Plus size={18} />
                                             <span>Neue Lektion erstellen</span>
                                         </button>
                                     </div>
 
+                                    {/* Search & View Switcher Toolbar */}
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#14151f] p-3 rounded-2xl border border-white/10">
+                                        {/* Search Input */}
+                                        <div className="relative flex-1 min-w-[200px]">
+                                            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
+                                            <input
+                                                type="text"
+                                                value={lessonSearch}
+                                                onChange={e => setLessonSearch(e.target.value)}
+                                                placeholder="Lektion nach Titel, Schüler, Notiz suchen..."
+                                                className="w-full bg-white/[0.04] border border-white/10 rounded-xl pl-9 pr-8 py-2 text-xs text-white placeholder-white/40 focus:outline-none focus:border-[#e44c65] transition-colors"
+                                            />
+                                            {lessonSearch && (
+                                                <button
+                                                    onClick={() => setLessonSearch("")}
+                                                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                                                    title="Suche leeren"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {/* View Switcher Controls */}
+                                        <div className="flex items-center gap-1 bg-white/[0.04] p-1 rounded-xl border border-white/10 shrink-0 self-end sm:self-auto">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setLessonViewMode("grid");
+                                                    try { localStorage.setItem("santi_lesson_view_mode", "grid"); } catch (_) {}
+                                                }}
+                                                title="Kachel-Ansicht (Groß)"
+                                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                                                    lessonViewMode === "grid"
+                                                        ? "bg-[#e44c65] text-white shadow-sm"
+                                                        : "text-white/60 hover:text-white hover:bg-white/5"
+                                                }`}
+                                            >
+                                                <LayoutGrid size={14} />
+                                                <span>Kacheln</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setLessonViewMode("compact");
+                                                    try { localStorage.setItem("santi_lesson_view_mode", "compact"); } catch (_) {}
+                                                }}
+                                                title="Kompakte Listenansicht"
+                                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                                                    lessonViewMode === "compact"
+                                                        ? "bg-[#e44c65] text-white shadow-sm"
+                                                        : "text-white/60 hover:text-white hover:bg-white/5"
+                                                }`}
+                                            >
+                                                <List size={14} />
+                                                <span>Kompakt</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setLessonViewMode("table");
+                                                    try { localStorage.setItem("santi_lesson_view_mode", "table"); } catch (_) {}
+                                                }}
+                                                title="Tabelle (Ganz klein)"
+                                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                                                    lessonViewMode === "table"
+                                                        ? "bg-[#e44c65] text-white shadow-sm"
+                                                        : "text-white/60 hover:text-white hover:bg-white/5"
+                                                }`}
+                                            >
+                                                <TableIcon size={14} />
+                                                <span>Klein</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
                                     {/* Filter: All, Global, Specific student */}
-                                    <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                                    <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
                                         <button
                                             onClick={() => setLessonFilter("ALL")}
-                                            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                                            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                                                 lessonFilter === "ALL"
                                                     ? "bg-[#e44c65] text-white shadow-md"
                                                     : "bg-[#14151f] text-white/60 hover:text-white border border-white/5"
@@ -1048,7 +1196,7 @@ export default function AdminDashboard() {
                                         </button>
                                         <button
                                             onClick={() => setLessonFilter("GLOBAL")}
-                                            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                                            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                                                 lessonFilter === "GLOBAL"
                                                     ? "bg-[#e44c65] text-white shadow-md"
                                                     : "bg-[#14151f] text-white/60 hover:text-white border border-white/5"
@@ -1060,7 +1208,7 @@ export default function AdminDashboard() {
                                             <button
                                                 key={s.id}
                                                 onClick={() => setLessonFilter(s.id)}
-                                                className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                                                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                                                     lessonFilter === s.id
                                                         ? "bg-[#e44c65] text-white shadow-md"
                                                         : "bg-[#14151f] text-white/60 hover:text-white border border-white/5"
@@ -1071,96 +1219,327 @@ export default function AdminDashboard() {
                                         ))}
                                     </div>
 
-                                    {/* Lessons List */}
-                                    <div className="space-y-4">
-                                        {filteredLessons.map(lesson => (
-                                            <div
-                                                key={lesson.id}
-                                                className="bg-[#14151f] border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all"
+                                    {/* Search Info line if searching */}
+                                    {lessonSearch && (
+                                        <div className="flex items-center justify-between text-xs text-white/50 px-1">
+                                            <span>
+                                                {filteredLessons.length} Lektion{filteredLessons.length === 1 ? "" : "en"} gefunden für &quot;{lessonSearch}&quot;
+                                            </span>
+                                            <button
+                                                onClick={() => setLessonSearch("")}
+                                                className="text-[#e44c65] hover:underline"
                                             >
-                                                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                                            <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-[#e44c65]/15 text-[#e44c65] border border-[#e44c65]/30">
+                                                Filter zurücksetzen
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {/* Empty State */}
+                                    {filteredLessons.length === 0 && (
+                                        <div className="text-center py-16 px-4 bg-[#14151f] rounded-2xl border border-white/5">
+                                            <BookOpen size={40} className="mx-auto text-white/20 mb-3" />
+                                            <h3 className="text-base font-bold text-white mb-1">Keine Lektionen gefunden</h3>
+                                            <p className="text-xs text-white/50 max-w-sm mx-auto mb-4">
+                                                {lessonSearch
+                                                    ? `Keine Ergebnisse für "${lessonSearch}". Überprüfe deine Suche oder Zuweisungs-Filter.`
+                                                    : "In dieser Auswahl sind noch keine Lektionen hinterlegt."}
+                                            </p>
+                                            {lessonSearch ? (
+                                                <button
+                                                    onClick={() => setLessonSearch("")}
+                                                    className="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-semibold hover:bg-white/15"
+                                                >
+                                                    Suche zurücksetzen
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={handleOpenNewLesson}
+                                                    className="px-4 py-2 rounded-xl bg-[#e44c65] text-white text-xs font-semibold hover:bg-[#c43c52]"
+                                                >
+                                                    Neue Lektion anlegen
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* ─── VIEW 1: GRID / KACHELN ─── */}
+                                    {lessonViewMode === "grid" && filteredLessons.length > 0 && (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                            {filteredLessons.map(lesson => (
+                                                <div
+                                                    key={lesson.id}
+                                                    className="bg-[#14151f] border border-white/10 rounded-2xl p-5 hover:border-white/20 transition-all flex flex-col justify-between group shadow-lg"
+                                                >
+                                                    <div>
+                                                        <div className="flex items-center gap-2 mb-2.5 flex-wrap">
+                                                            <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#e44c65]/15 text-[#e44c65] border border-[#e44c65]/30">
                                                                 🥁 {lesson.instrument}
                                                             </span>
                                                             {lesson.isGlobal ? (
-                                                                <span className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                                                <span className="px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
                                                                     🌐 Alle Schüler
                                                                 </span>
                                                             ) : (
-                                                                <span className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                                                                <span className="px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
                                                                     👤 {lesson.studentName}
                                                                 </span>
                                                             )}
-                                                            <span className="text-xs text-white/40">
+                                                            <span className="text-[11px] text-white/40 ml-auto">
                                                                 {new Date(lesson.createdAt).toLocaleDateString("de-DE")}
                                                             </span>
                                                         </div>
 
-                                                        <h3 className="text-lg font-bold text-white mb-2">{lesson.title}</h3>
+                                                        <h3 className="text-base font-bold text-white mb-1.5 group-hover:text-[#e44c65] transition-colors">
+                                                            {lesson.title}
+                                                        </h3>
                                                         {lesson.description && (
-                                                            <p className="text-sm text-white/70 mb-3">{lesson.description}</p>
+                                                            <p className="text-xs text-white/70 line-clamp-2 mb-3 leading-relaxed">
+                                                                {lesson.description}
+                                                            </p>
                                                         )}
 
                                                         {lesson.notes && (
-                                                            <div className="p-3 bg-white/[0.02] border-l-2 border-[#e44c65] rounded-r-lg text-xs text-white/60 mb-3">
-                                                                <span className="font-bold text-[#e44c65] block mb-1">Lehrer-Notiz:</span>
-                                                                {lesson.notes}
+                                                            <div className="p-2.5 bg-white/[0.02] border-l-2 border-[#e44c65] rounded-r-lg text-xs text-white/60 mb-3">
+                                                                <span className="font-bold text-[#e44c65] block mb-0.5 text-[11px]">Tipp / Notiz:</span>
+                                                                <p className="line-clamp-2">{lesson.notes}</p>
                                                             </div>
                                                         )}
 
-                                                        {/* Attached Files List */}
+                                                        {/* Attached Files Badges */}
                                                         {lesson.files && lesson.files.length > 0 && (
-                                                            <div className="mt-4 pt-4 border-t border-white/10">
-                                                                <p className="text-xs font-bold uppercase tracking-wider text-white/40 mb-2">
-                                                                    Angehängte Materialien ({lesson.files.length})
-                                                                </p>
-                                                                <div className="flex flex-wrap gap-2">
-                                                                    {lesson.files.map(file => (
-                                                                        <div
+                                                            <div className="mt-3 pt-3 border-t border-white/5">
+                                                                <div className="flex items-center justify-between mb-2">
+                                                                    <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">
+                                                                        Materialien ({lesson.files.length})
+                                                                    </p>
+                                                                </div>
+                                                                <div className="flex flex-wrap gap-1.5">
+                                                                    {lesson.files.slice(0, 3).map(file => (
+                                                                        <a
                                                                             key={file.id}
-                                                                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs"
+                                                                            href={file.url}
+                                                                            target="_blank"
+                                                                            rel="noreferrer"
+                                                                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-white hover:text-white transition-all max-w-[200px] truncate"
+                                                                            title={file.name}
                                                                         >
                                                                             <span>{file.category === "pdf" ? "📄" : file.category === "audio" ? "🎵" : "🎬"}</span>
-                                                                            <a href={file.url} target="_blank" rel="noreferrer" className="text-white hover:underline truncate max-w-xs">
-                                                                                {file.name}
-                                                                            </a>
-                                                                            <button
-                                                                                onClick={() => handleDeleteMaterial(lesson.id, file.id)}
-                                                                                className="text-red-400 hover:text-red-300 ml-1"
-                                                                                title="Datei entfernen"
-                                                                            >
-                                                                                ✕
-                                                                            </button>
-                                                                        </div>
+                                                                            <span className="truncate">{file.name}</span>
+                                                                        </a>
                                                                     ))}
+                                                                    {lesson.files.length > 3 && (
+                                                                        <span className="text-[11px] text-white/40 self-center px-1">
+                                                                            +{lesson.files.length - 3} weitere
+                                                                        </span>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                         )}
                                                     </div>
 
-                                                    {/* Actions */}
-                                                    <div className="flex items-center gap-2 shrink-0">
+                                                    {/* Actions Bottom Bar */}
+                                                    <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between gap-2">
                                                         <button
-                                                            onClick={() => setEditingLessonId(lesson.id)}
-                                                            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white transition-all"
+                                                            onClick={() => handleOpenEditLesson(lesson)}
+                                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#e44c65]/15 hover:bg-[#e44c65]/25 border border-[#e44c65]/30 text-[#e44c65] text-xs font-semibold transition-all"
                                                         >
-                                                            <Upload size={14} />
-                                                            <span>Dateien hochladen</span>
+                                                            <Edit2 size={13} />
+                                                            <span>Bearbeiten</span>
                                                         </button>
-                                                        <button
-                                                            onClick={() => handleDeleteLesson(lesson.id, lesson.title)}
-                                                            className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
-                                                            title="Lektion löschen"
-                                                        >
-                                                            <Trash2 size={16} />
-                                                        </button>
+
+                                                        <div className="flex items-center gap-1.5">
+                                                            <button
+                                                                onClick={() => setEditingLessonId(lesson.id)}
+                                                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-white/80 hover:text-white transition-all"
+                                                                title="Dateien hochladen / verwalten"
+                                                            >
+                                                                <Upload size={13} />
+                                                                <span>Dateien ({lesson.files?.length || 0})</span>
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteLesson(lesson.id, lesson.title)}
+                                                                className="p-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
+                                                                title="Lektion löschen"
+                                                            >
+                                                                <Trash2 size={14} />
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* ─── VIEW 2: COMPACT / KOMPAKT ─── */}
+                                    {lessonViewMode === "compact" && filteredLessons.length > 0 && (
+                                        <div className="space-y-3">
+                                            {filteredLessons.map(lesson => (
+                                                <div
+                                                    key={lesson.id}
+                                                    className="bg-[#14151f] border border-white/10 hover:border-white/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all group"
+                                                >
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#e44c65]/15 text-[#e44c65]">
+                                                                🥁 {lesson.instrument}
+                                                            </span>
+                                                            {lesson.isGlobal ? (
+                                                                <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-blue-500/10 text-blue-400">
+                                                                    🌐 Alle Schüler
+                                                                </span>
+                                                            ) : (
+                                                                <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-purple-500/10 text-purple-400">
+                                                                    👤 {lesson.studentName}
+                                                                </span>
+                                                            )}
+                                                            <span className="text-[11px] text-white/40">
+                                                                {new Date(lesson.createdAt).toLocaleDateString("de-DE")}
+                                                            </span>
+                                                        </div>
+                                                        <h3 className="text-sm font-bold text-white group-hover:text-[#e44c65] transition-colors truncate">
+                                                            {lesson.title}
+                                                        </h3>
+                                                        {lesson.description && (
+                                                            <p className="text-xs text-white/50 truncate max-w-xl">
+                                                                {lesson.description}
+                                                            </p>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
+                                                        {/* Files Pill */}
+                                                        {lesson.files && lesson.files.length > 0 ? (
+                                                            <button
+                                                                onClick={() => setEditingLessonId(lesson.id)}
+                                                                className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] text-white/70 hover:text-white border border-white/10 transition-colors inline-flex items-center gap-1.5"
+                                                            >
+                                                                <span>{lesson.files.length} Datei{lesson.files.length === 1 ? "" : "en"}</span>
+                                                                <span className="text-[10px] opacity-70">
+                                                                    {lesson.files.map(f => f.category === "pdf" ? "📄" : f.category === "audio" ? "🎵" : "🎬").slice(0, 3).join("")}
+                                                                </span>
+                                                            </button>
+                                                        ) : (
+                                                            <span className="text-[11px] text-white/30 italic">Keine Dateien</span>
+                                                        )}
+
+                                                        {/* Actions */}
+                                                        <div className="flex items-center gap-1.5">
+                                                            <button
+                                                                onClick={() => handleOpenEditLesson(lesson)}
+                                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#e44c65]/15 hover:bg-[#e44c65]/25 border border-[#e44c65]/30 text-[#e44c65] text-xs font-semibold transition-all"
+                                                            >
+                                                                <Edit2 size={12} />
+                                                                <span>Bearbeiten</span>
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setEditingLessonId(lesson.id)}
+                                                                className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+                                                                title="Dateien hochladen"
+                                                            >
+                                                                <Upload size={14} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteLesson(lesson.id, lesson.title)}
+                                                                className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
+                                                                title="Löschen"
+                                                            >
+                                                                <Trash2 size={14} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* ─── VIEW 3: TABLE / GANZ KLEIN ─── */}
+                                    {lessonViewMode === "table" && filteredLessons.length > 0 && (
+                                        <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#14151f] shadow-lg">
+                                            <table className="w-full text-left text-xs">
+                                                <thead className="bg-white/[0.03] border-b border-white/10 text-white/50 uppercase text-[10px] tracking-wider">
+                                                    <tr>
+                                                        <th className="py-3 px-4">Titel & Beschreibung</th>
+                                                        <th className="py-3 px-4">Instrument</th>
+                                                        <th className="py-3 px-4">Zuweisung</th>
+                                                        <th className="py-3 px-4">Materialien</th>
+                                                        <th className="py-3 px-4">Datum</th>
+                                                        <th className="py-3 px-4 text-right">Aktionen</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-white/5 text-white/80">
+                                                    {filteredLessons.map(lesson => (
+                                                        <tr key={lesson.id} className="hover:bg-white/[0.02] transition-colors group">
+                                                            <td className="py-2.5 px-4">
+                                                                <div className="font-bold text-white text-xs group-hover:text-[#e44c65] transition-colors">
+                                                                    {lesson.title}
+                                                                </div>
+                                                                {lesson.description && (
+                                                                    <p className="text-white/40 line-clamp-1 max-w-sm text-[11px] mt-0.5">{lesson.description}</p>
+                                                                )}
+                                                            </td>
+                                                            <td className="py-2.5 px-4 whitespace-nowrap">
+                                                                <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-[#e44c65]/10 text-[#e44c65] border border-[#e44c65]/20">
+                                                                    {lesson.instrument}
+                                                                </span>
+                                                            </td>
+                                                            <td className="py-2.5 px-4 whitespace-nowrap">
+                                                                {lesson.isGlobal ? (
+                                                                    <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                                                        🌐 Alle
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                                                                        👤 {lesson.studentName}
+                                                                    </span>
+                                                                )}
+                                                            </td>
+                                                            <td className="py-2.5 px-4 whitespace-nowrap">
+                                                                {lesson.files && lesson.files.length > 0 ? (
+                                                                    <button
+                                                                        onClick={() => setEditingLessonId(lesson.id)}
+                                                                        className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/10 transition-colors text-[11px]"
+                                                                    >
+                                                                        <span>{lesson.files.length} Datei{lesson.files.length === 1 ? "" : "en"}</span>
+                                                                        <span className="opacity-70">{lesson.files.map(f => f.category === "pdf" ? "📄" : f.category === "audio" ? "🎵" : "🎬").slice(0, 3).join("")}</span>
+                                                                    </button>
+                                                                ) : (
+                                                                    <span className="text-white/30 italic text-[11px]">-</span>
+                                                                )}
+                                                            </td>
+                                                            <td className="py-2.5 px-4 whitespace-nowrap text-white/40 text-[11px]">
+                                                                {new Date(lesson.createdAt).toLocaleDateString("de-DE")}
+                                                            </td>
+                                                            <td className="py-2.5 px-4 whitespace-nowrap text-right">
+                                                                <div className="inline-flex items-center gap-1 justify-end">
+                                                                    <button
+                                                                        onClick={() => handleOpenEditLesson(lesson)}
+                                                                        className="p-1.5 rounded-lg bg-[#e44c65]/15 hover:bg-[#e44c65]/25 text-[#e44c65] transition-colors"
+                                                                        title="Lektion bearbeiten"
+                                                                    >
+                                                                        <Edit2 size={13} />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => setEditingLessonId(lesson.id)}
+                                                                        className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+                                                                        title="Dateien verwalten"
+                                                                    >
+                                                                        <Upload size={13} />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleDeleteLesson(lesson.id, lesson.title)}
+                                                                        className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
+                                                                        title="Lektion löschen"
+                                                                    >
+                                                                        <Trash2 size={13} />
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
@@ -1512,6 +1891,77 @@ export default function AdminDashboard() {
                             )}
                         </div>
 
+                        {/* Assigned Lessons Section */}
+                        <div className="mb-6 pt-4 border-t border-white/10">
+                            <div className="flex items-center justify-between mb-3">
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-white/50">
+                                    Zugewiesene Lektionen ({lessons.filter(l => l.studentId === selectedStudent.id).length} individuell)
+                                </h4>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const sId = selectedStudent.id;
+                                        const sInst = selectedStudent.instrument || "Schlagzeug";
+                                        setSelectedStudentId(null);
+                                        setEditingLesson(null);
+                                        setLessonForm({
+                                            title: "",
+                                            description: "",
+                                            notes: "",
+                                            instrument: sInst,
+                                            assignee: sId,
+                                        });
+                                        setShowLessonModal(true);
+                                    }}
+                                    className="text-[11px] text-[#e44c65] font-semibold hover:underline inline-flex items-center gap-1"
+                                >
+                                    <Plus size={13} />
+                                    <span>Lektion für {selectedStudent.name.split(" ")[0]} anlegen</span>
+                                </button>
+                            </div>
+
+                            {lessons.filter(l => l.studentId === selectedStudent.id).length === 0 ? (
+                                <p className="text-xs text-white/40 italic">Diesem Schüler sind noch keine individuellen Lektionen zugewiesen.</p>
+                            ) : (
+                                <div className="space-y-2">
+                                    {lessons.filter(l => l.studentId === selectedStudent.id).map(l => (
+                                        <div key={l.id} className="flex items-center justify-between p-3 bg-white/[0.03] border border-white/5 rounded-xl text-xs">
+                                            <div className="min-w-0 pr-3">
+                                                <span className="font-bold text-white block truncate">{l.title}</span>
+                                                <span className="text-[11px] text-white/40">
+                                                    🥁 {l.instrument} · {l.files?.length || 0} Material{(l.files?.length || 0) === 1 ? "" : "ien"}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 shrink-0">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setSelectedStudentId(null);
+                                                        handleOpenEditLesson(l);
+                                                    }}
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#e44c65]/15 hover:bg-[#e44c65]/25 border border-[#e44c65]/30 text-[#e44c65] text-xs font-semibold transition-all"
+                                                >
+                                                    <Edit2 size={12} />
+                                                    <span>Bearbeiten</span>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setSelectedStudentId(null);
+                                                        setEditingLessonId(l.id);
+                                                    }}
+                                                    className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+                                                    title="Dateien verwalten"
+                                                >
+                                                    <Upload size={13} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
                         {/* Recent Journal History */}
                         <div>
                             <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-3">
@@ -1667,47 +2117,64 @@ export default function AdminDashboard() {
                 </div>
             )}
 
-            {/* ─── MODAL: LEKTION ANLEGEN ────────────────────────────── */}
+            {/* ─── MODAL: LEKTION ERSTELLEN ODER BEARBEITEN ──────────── */}
             {showLessonModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
-                    <div className="bg-[#14151f] border border-white/15 rounded-3xl p-6 sm:p-8 w-full max-w-lg shadow-2xl relative">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-bold text-white">Neue Lektion erstellen</h3>
-                            <button onClick={() => setShowLessonModal(false)} className="text-white/40 hover:text-white">✕</button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+                    <div className={`bg-[#14151f] border border-white/15 rounded-3xl p-6 sm:p-8 w-full shadow-2xl relative max-h-[92vh] overflow-y-auto ${
+                        editingLesson ? "max-w-2xl" : "max-w-lg"
+                    }`}>
+                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
+                            <div>
+                                <span className="text-[11px] font-bold uppercase tracking-wider text-[#e44c65]">
+                                    {editingLesson ? "Lektion bearbeiten" : "Neue Lektion"}
+                                </span>
+                                <h3 className="text-xl font-bold text-white">
+                                    {editingLesson ? lessonForm.title || "Lektion bearbeiten" : "Neue Lektion erstellen"}
+                                </h3>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    setShowLessonModal(false);
+                                    setEditingLesson(null);
+                                }}
+                                className="p-1 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
                         </div>
 
                         <form onSubmit={handleSaveLesson} className="space-y-4">
                             <div>
-                                <label className="text-xs uppercase tracking-wider text-white/60 block mb-1.5">Titel der Lektion *</label>
+                                <label className="text-xs uppercase tracking-wider text-white/60 block mb-1.5 font-semibold">Titel der Lektion *</label>
                                 <input
                                     type="text"
                                     required
                                     value={lessonForm.title}
                                     onChange={e => setLessonForm({ ...lessonForm, title: e.target.value })}
                                     placeholder="z.B. Ghost Notes & Backbeat Essentials"
-                                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#e44c65]"
+                                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#e44c65] transition-colors"
                                 />
                             </div>
 
-                            <div>
-                                <label className="text-xs uppercase tracking-wider text-white/60 block mb-1.5">Zuweisung *</label>
-                                <select
-                                    value={lessonForm.assignee}
-                                    onChange={e => setLessonForm({ ...lessonForm, assignee: e.target.value })}
-                                    className="w-full bg-[#181924] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#e44c65]"
-                                >
-                                    <option value="ALL">🌐 Alle Schüler (Basis-Lektion)</option>
-                                    <optgroup label="Spezifischer Schüler:">
-                                        {students.map(s => (
-                                            <option key={s.id} value={s.id}>👤 {s.name} ({s.instrument || "Schlagzeug"})</option>
-                                        ))}
-                                    </optgroup>
-                                </select>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-xs uppercase tracking-wider text-white/60 block mb-1.5">Instrument</label>
+                                    <label className="text-xs uppercase tracking-wider text-white/60 block mb-1.5 font-semibold">Zuweisung *</label>
+                                    <select
+                                        value={lessonForm.assignee}
+                                        onChange={e => setLessonForm({ ...lessonForm, assignee: e.target.value })}
+                                        className="w-full bg-[#181924] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#e44c65]"
+                                    >
+                                        <option value="ALL">🌐 Alle Schüler (Basis-Lektion)</option>
+                                        <optgroup label="Spezifischer Schüler:">
+                                            {students.map(s => (
+                                                <option key={s.id} value={s.id}>👤 {s.name} ({s.instrument || "Schlagzeug"})</option>
+                                            ))}
+                                        </optgroup>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="text-xs uppercase tracking-wider text-white/60 block mb-1.5 font-semibold">Instrument</label>
                                     <select
                                         value={lessonForm.instrument}
                                         onChange={e => setLessonForm({ ...lessonForm, instrument: e.target.value })}
@@ -1716,46 +2183,162 @@ export default function AdminDashboard() {
                                         <option value="Schlagzeug">🥁 Schlagzeug</option>
                                         <option value="Cajon">🪘 Cajon</option>
                                         <option value="Hybrid Set">🎛️ Hybrid Set</option>
+                                        <option value="Percussion">🪇 Percussion</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div>
-                                <label className="text-xs uppercase tracking-wider text-white/60 block mb-1.5">Beschreibung</label>
+                                <label className="text-xs uppercase tracking-wider text-white/60 block mb-1.5 font-semibold">Beschreibung</label>
                                 <textarea
-                                    rows={2}
+                                    rows={3}
                                     value={lessonForm.description}
                                     onChange={e => setLessonForm({ ...lessonForm, description: e.target.value })}
-                                    placeholder="Kurze Erklärung der Lektion..."
-                                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-[#e44c65]"
+                                    placeholder="Worum geht es in dieser Lektion? Was lernt der Schüler?"
+                                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-[#e44c65] transition-colors resize-none"
                                 />
                             </div>
 
                             <div>
-                                <label className="text-xs uppercase tracking-wider text-white/60 block mb-1.5">Tipp von Santino (Notiz)</label>
+                                <label className="text-xs uppercase tracking-wider text-white/60 block mb-1.5 font-semibold">Tipp von Santino (Übe-Empfehlung / Notiz)</label>
                                 <input
                                     type="text"
                                     value={lessonForm.notes}
                                     onChange={e => setLessonForm({ ...lessonForm, notes: e.target.value })}
-                                    placeholder="z.B. Erst langsam bei 60 BPM üben"
-                                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-[#e44c65]"
+                                    placeholder="z.B. Erst langsam bei 60 BPM üben, Fokus auf saubere Hi-Hat"
+                                    className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-[#e44c65] transition-colors"
                                 />
                             </div>
 
-                            <div className="flex gap-3 pt-4">
+                            {/* INLINE MATERIAL MANAGEMENT FOR EDITING LESSON */}
+                            {editingLesson && (
+                                <div className="mt-6 pt-5 border-t border-white/10 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                                <FileText size={16} className="text-[#e44c65]" />
+                                                <span>Angehängte Materialien ({editingLesson.files?.length || 0})</span>
+                                            </h4>
+                                            <p className="text-xs text-white/50">PDFs, Notenblätter, MP3-Playalongs oder Videos verwalten</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Existing Files List */}
+                                    {editingLesson.files && editingLesson.files.length > 0 ? (
+                                        <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                                            {editingLesson.files.map(file => (
+                                                <div key={file.id} className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.04] border border-white/5 text-xs">
+                                                    <div className="flex items-center gap-2.5 truncate min-w-0">
+                                                        <span className="text-base shrink-0">{file.category === "pdf" ? "📄" : file.category === "audio" ? "🎵" : "🎬"}</span>
+                                                        <div className="truncate">
+                                                            <span className="text-white font-medium block truncate">{file.name}</span>
+                                                            {file.size && <span className="text-[10px] text-white/40">{file.size}</span>}
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 shrink-0 ml-2">
+                                                        <a
+                                                            href={file.url}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            className="text-blue-400 hover:text-blue-300 font-semibold px-2 py-1 rounded bg-blue-500/10 text-xs"
+                                                        >
+                                                            Öffnen
+                                                        </a>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDeleteMaterial(editingLesson.id, file.id)}
+                                                            className="text-red-400 hover:text-red-300 p-1.5 rounded hover:bg-red-500/10"
+                                                            title="Datei löschen"
+                                                        >
+                                                            <Trash2 size={13} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-xs text-white/40 italic py-1">Noch keine Dateien zu dieser Lektion hochgeladen.</p>
+                                    )}
+
+                                    {/* Quick Upload Box */}
+                                    <div className="p-4 rounded-xl bg-white/[0.02] border border-dashed border-white/15">
+                                        <div className="flex items-center justify-between gap-2 flex-wrap mb-3">
+                                            <span className="text-xs font-semibold text-white/70">Neue Datei anhängen:</span>
+                                            <div className="flex items-center gap-1.5">
+                                                {[
+                                                    { key: "pdf", label: "📄 PDF" },
+                                                    { key: "audio", label: "🎵 Audio" },
+                                                    { key: "video", label: "🎬 Video" },
+                                                ].map(cat => (
+                                                    <button
+                                                        key={cat.key}
+                                                        type="button"
+                                                        onClick={() => setFileCategory(cat.key)}
+                                                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                                                            fileCategory === cat.key
+                                                                ? "bg-[#e44c65] text-white shadow"
+                                                                : "bg-white/5 text-white/60 hover:text-white"
+                                                        }`}
+                                                    >
+                                                        {cat.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            id="editLessonInlineFileInput"
+                                            className="hidden"
+                                            onChange={e => handleFileUpload(e, editingLesson.id)}
+                                        />
+                                        <label
+                                            htmlFor="editLessonInlineFileInput"
+                                            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs cursor-pointer transition-all border border-white/10"
+                                        >
+                                            {uploadingFile ? (
+                                                <>
+                                                    <Loader2 size={14} className="animate-spin text-[#e44c65]" />
+                                                    <span>Wird hochgeladen...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Upload size={14} />
+                                                    <span>Datei vom Computer auswählen</span>
+                                                </>
+                                            )}
+                                        </label>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="flex items-center gap-3 pt-4 border-t border-white/10">
                                 <button
                                     type="submit"
                                     disabled={lessonFormLoading}
-                                    className="flex-1 py-3 bg-[#e44c65] text-white rounded-xl text-xs uppercase tracking-wider font-semibold shadow-lg hover:bg-[#c43c52] transition-colors disabled:opacity-50"
+                                    className="flex-1 py-3 bg-[#e44c65] text-white rounded-xl text-xs uppercase tracking-wider font-semibold shadow-lg hover:bg-[#c43c52] transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
                                 >
-                                    {lessonFormLoading ? "Erstellt..." : "Lektion erstellen & Dateien hinzufügen →"}
+                                    {lessonFormLoading ? (
+                                        <>
+                                            <Loader2 size={14} className="animate-spin" />
+                                            <span>Wird gespeichert...</span>
+                                        </>
+                                    ) : editingLesson ? (
+                                        <span>Änderungen speichern</span>
+                                    ) : (
+                                        <span>Lektion erstellen & Dateien hinzufügen →</span>
+                                    )}
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => setShowLessonModal(false)}
+                                    onClick={() => {
+                                        setShowLessonModal(false);
+                                        setEditingLesson(null);
+                                    }}
                                     className="px-5 py-3 bg-white/10 text-white rounded-xl text-xs font-semibold hover:bg-white/15 transition-colors"
                                 >
-                                    Abbrechen
+                                    {editingLesson ? "Fertig" : "Abbrechen"}
                                 </button>
                             </div>
                         </form>
@@ -1764,7 +2347,7 @@ export default function AdminDashboard() {
             )}
 
             {/* ─── DRAWER / MODAL: DATEIEN ZU LEKTION HOCHLADEN ──────── */}
-            {editingLessonId && activeEditingLesson && (
+            {editingLessonId && activeEditingLesson && !showLessonModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
                     <div className="bg-[#14151f] border border-white/15 rounded-3xl p-6 sm:p-8 w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between mb-4">
