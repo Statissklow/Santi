@@ -4,6 +4,7 @@ import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
+    secret: process.env.NEXTAUTH_SECRET || "santino-scavelli-secret-key-2024",
     session: {
         strategy: "jwt",
     },
@@ -22,9 +23,14 @@ export const authOptions: NextAuthOptions = {
                     return null;
                 }
 
-                const user = await prisma.user.findUnique({
+                const cleanEmail = credentials.email.trim().toLowerCase();
+
+                const user = await prisma.user.findFirst({
                     where: {
-                        email: credentials.email,
+                        email: {
+                            equals: cleanEmail,
+                            mode: "insensitive",
+                        },
                     },
                 });
 

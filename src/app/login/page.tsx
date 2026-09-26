@@ -18,9 +18,10 @@ export default function LoginPage() {
         setError("");
 
         try {
+            const cleanEmail = email.trim().toLowerCase();
             const res = await signIn("credentials", {
                 redirect: false,
-                email,
+                email: cleanEmail,
                 password,
             });
 
@@ -100,6 +101,9 @@ export default function LoginPage() {
                         <input
                             type="email"
                             required
+                            autoCapitalize="none"
+                            autoCorrect="off"
+                            spellCheck={false}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="dein.name@example.com"
