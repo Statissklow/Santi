@@ -132,12 +132,6 @@ export default function SamplePackPageEN() {
 
     return (
         <div className="min-h-screen bg-[#0f0f14] text-gray-200 font-sans selection:bg-[#e44c65] selection:text-white">
-  {/* Construction Banner */}
-  <div className="relative w-full overflow-hidden">
-    <div className="h-12 -rotate-3 transform origin-left-top bg-[repeating-linear-gradient(135deg,#ef4444,#ef4444_12px,#fff_12px,#fff_24px)] flex items-center justify-center text-white text-sm font-bold">
-      🚧 BAUSTELLE · COMING SOON · UNDER CONSTRUCTION 🚧
-    </div>
-  </div>
             {/* Ambient Background Glows */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
                 <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-[#e44c65]/10 rounded-full blur-[140px]" />
@@ -145,8 +139,26 @@ export default function SamplePackPageEN() {
             </div>
 
             <div className="relative z-10">
+                {/* ─── RIESIGES BAUSTELLENZEICHEN / COMING SOON HEADER ─── */}
+                <section className="pt-32 sm:pt-36 pb-4 max-w-4xl mx-auto px-4 sm:px-6 text-center">
+                    <div className="inline-block p-6 sm:p-8 rounded-3xl bg-amber-500/[0.08] border-2 border-amber-500/30 shadow-[0_0_50px_rgba(245,158,11,0.2)] backdrop-blur-xl">
+                        <div className="text-7xl sm:text-8xl md:text-9xl select-none leading-none mb-4 filter drop-shadow-[0_0_35px_rgba(245,158,11,0.6)]">
+                            🚧
+                        </div>
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-400 text-xs sm:text-sm font-bold uppercase tracking-[0.25em] mb-3">
+                            <span>Under Construction</span>
+                        </div>
+                        <h2 className="text-3xl sm:text-5xl font-light tracking-[0.16em] uppercase text-white mb-2">
+                            Coming Soon
+                        </h2>
+                        <p className="text-sm sm:text-base text-gray-300 font-light max-w-xl mx-auto leading-relaxed">
+                            The <strong className="text-white font-semibold">SYNTHESIS Sample Pack</strong> is currently in final production. Listen to the audio demos below and sign up to receive early access on release!
+                        </p>
+                    </div>
+                </section>
+
                 {/* ─── HERO SECTION ─────────────────────────────────────────── */}
-                <section className="pt-32 pb-20 sm:pt-40 sm:pb-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <section className="pt-10 pb-20 sm:pt-14 sm:pb-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
                         {/* Left: Text & Pitch */}
                         <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
