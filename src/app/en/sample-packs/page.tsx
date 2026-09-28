@@ -217,34 +217,52 @@ export default function SamplePackPageEN() {
             </div>
 
             <div className="relative z-10">
+                {/* ─── UNDER CONSTRUCTION / COMING SOON HEADER ─── */}
+                <section className="pt-32 sm:pt-36 pb-4 max-w-4xl mx-auto px-4 sm:px-6 text-center">
+                    <div className="inline-block p-6 sm:p-8 rounded-3xl bg-amber-500/[0.08] border-2 border-amber-500/30 shadow-[0_0_50px_rgba(245,158,11,0.2)] backdrop-blur-xl">
+                        <div className="text-7xl sm:text-8xl md:text-9xl select-none leading-none mb-4 filter drop-shadow-[0_0_35px_rgba(245,158,11,0.6)]">
+                            🚧
+                        </div>
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-400 text-xs sm:text-sm font-bold uppercase tracking-[0.25em] mb-3">
+                            <span>Under Construction</span>
+                        </div>
+                        <h2 className="text-3xl sm:text-5xl font-light tracking-[0.16em] uppercase text-white mb-2">
+                            Coming Soon
+                        </h2>
+                        <p className="text-sm sm:text-base text-gray-300 font-light max-w-xl mx-auto leading-relaxed">
+                            The <strong className="text-white font-semibold">SYNTHESIS Sample Pack</strong> is in its final touches ahead of the official Instagram campaign launch. Listen to the audio demos below and secure your spot on the <strong className="text-white">VIP Waitlist</strong> for instant early access upon release!
+                        </p>
+                    </div>
+                </section>
+
                 {/* ─── HERO SECTION ─────────────────────────────────────────── */}
-                <section className="pt-32 pb-20 sm:pt-40 sm:pb-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <section className="pt-10 pb-20 sm:pt-14 sm:pb-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
                         {/* Left: Text & Pitch */}
                         <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
                             <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.05] border border-white/10 text-[#e44c65] text-xs font-semibold uppercase tracking-[0.2em] shadow-lg">
                                 <Sparkles size={14} className="animate-pulse" />
-                                <span>Exclusive Early Access · Limited Feedback Edition</span>
+                                <span>VIP Early Access · Limited Feedback Edition</span>
                             </div>
 
                             <div className="space-y-6 sm:space-y-7">
                                 <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light tracking-[0.16em] uppercase text-white leading-[1.1]">
                                     SYNTHESIS
                                 </h1>
-                                <p className="text-lg sm:text-xl md:text-2xl text-white/85 font-light tracking-[0.14em] uppercase">
-                                    Ambient &amp; Ethnic Drum Sample Pack
+                                <p className="text-lg sm:text-xl md:text-2xl text-white/90 font-light tracking-[0.14em] uppercase">
+                                    Electronic Beats, Hybrid Drums &amp; Punchy One-Shots
                                 </p>
                                 <p className="text-xs sm:text-sm text-[#e44c65] tracking-[0.22em] uppercase font-medium">
-                                    The Rhythmic Canvas · Created by Santino Scavelli
+                                    The Rhythmic Fusion · Created by Santino Scavelli
                                 </p>
                             </div>
 
                             <p className="text-base sm:text-lg text-gray-300/90 leading-relaxed font-light max-w-2xl mx-auto lg:mx-0">
-                                Organic. Ethnic. Immersive. A handpicked collection of traditional world percussion, live acoustic drum elements, and futuristic sound synthesis. Designed for producers, composers, and sound designers seeking authenticity and cinematic depth.
+                                Organic meets electronic. A handpicked collection of punchy one-shots, percussive impulses, and hybrid fusion drums. Created for music producers, sound designers, and beatmakers seeking a cohesive, punchy sound palette.
                             </p>
 
                             {/* Key specs pills */}
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl mx-auto lg:mx-0 pt-2">
+                            <div className="grid grid-cols-3 gap-3 max-w-lg mx-auto lg:mx-0 pt-2">
                                 <div className="p-3 bg-white/[0.03] border border-white/10 rounded-2xl text-center">
                                     <div className="text-xs uppercase tracking-[0.16em] text-white/40">Quality</div>
                                     <div className="text-sm font-semibold text-white mt-1">24-Bit / 48kHz</div>
@@ -254,12 +272,8 @@ export default function SamplePackPageEN() {
                                     <div className="text-sm font-semibold text-[#e44c65] mt-1">100% Royalty-Free</div>
                                 </div>
                                 <div className="p-3 bg-white/[0.03] border border-white/10 rounded-2xl text-center">
-                                    <div className="text-xs uppercase tracking-[0.16em] text-white/40">Hardware</div>
-                                    <div className="text-sm font-semibold text-white mt-1">Nord Drum 3P</div>
-                                </div>
-                                <div className="p-3 bg-white/[0.03] border border-white/10 rounded-2xl text-center">
                                     <div className="text-xs uppercase tracking-[0.16em] text-white/40">Format</div>
-                                    <div className="text-sm font-semibold text-white mt-1">Loops &amp; One-Shots</div>
+                                    <div className="text-sm font-semibold text-white mt-1">Pure One-Shots</div>
                                 </div>
                             </div>
 
@@ -269,8 +283,8 @@ export default function SamplePackPageEN() {
                                     href="#download-form"
                                     className="w-full sm:w-auto px-8 py-4 bg-[#e44c65] text-white text-xs sm:text-sm uppercase tracking-[0.18em] font-medium rounded-full shadow-[0_0_30px_rgba(228,76,101,0.4)] hover:shadow-[0_0_45px_rgba(228,76,101,0.7)] hover:bg-[#c43c52] transition-all text-center flex items-center justify-center gap-3 cursor-pointer"
                                 >
-                                    <Download size={18} />
-                                    <span>Download Free (For Feedback)</span>
+                                    <Sparkles size={18} />
+                                    <span>Join VIP Waitlist</span>
                                 </a>
                                 <a
                                     href="#demos"
@@ -291,7 +305,7 @@ export default function SamplePackPageEN() {
                                     <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-black/40">
                                         <Image
                                             src="/images/synthesis-sample-pack.jpg"
-                                            alt="SYNTHESIS Sample Pack - Ambient & Ethnic Drum Sample Pack"
+                                            alt="SYNTHESIS Sample Pack - Electronic & Hybrid Drum One-Shots"
                                             fill
                                             priority
                                             className="object-cover object-center group-hover:scale-102 transition-transform duration-700"
@@ -299,7 +313,7 @@ export default function SamplePackPageEN() {
                                     </div>
                                     <div className="mt-4 px-2 flex items-center justify-between text-xs tracking-[0.16em] uppercase text-white/50">
                                         <span>Sample Library Vol. 1</span>
-                                        <span className="text-[#e44c65] font-semibold">Immediate Download</span>
+                                        <span className="text-amber-400 font-semibold">Coming Soon · VIP Access</span>
                                     </div>
                                 </div>
                             </div>
@@ -511,16 +525,16 @@ export default function SamplePackPageEN() {
                             <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-[#e44c65] mb-6 group-hover:scale-110 transition-transform">
                                 <Layers size={24} />
                             </div>
-                            <span className="text-xs uppercase tracking-[0.2em] text-[#e44c65] font-semibold">01 · Tradition meets Modern</span>
+                            <span className="text-xs uppercase tracking-[0.2em] text-[#e44c65] font-semibold">01 · Organic &amp; Expressive</span>
                             <h3 className="text-xl sm:text-2xl font-light tracking-[0.1em] uppercase text-white mt-2 mb-3">
-                                Ethnic Percussion Stems
+                                Ethnic &amp; Hybrid Percussion
                             </h3>
                             <p className="text-sm text-gray-400 leading-relaxed font-light">
-                                Handcrafted Meinl Darbukas, Frame Drums, Djembes, Udu and Riq. Recorded with detailed close and room miking to capture rich resonance and true mechanical acoustic feel.
+                                Handcrafted Meinl Darbukas, Frame Drums, Djembes, and Shakers. Recorded with detailed close and room miking to capture rich resonance and natural acoustic feel.
                             </p>
                             <ul className="mt-4 space-y-2 text-xs text-white/70">
-                                <li className="flex items-center gap-2">✓ Dynamic ghost notes &amp; crisp slaps</li>
-                                <li className="flex items-center gap-2">✓ One-shots &amp; flexible tempo-labeled loops</li>
+                                <li className="flex items-center gap-2">✓ Dynamic ghost notes, slaps &amp; rim shots</li>
+                                <li className="flex items-center gap-2">✓ 100% pure one-shot hits (no loops)</li>
                             </ul>
                         </div>
 
@@ -531,14 +545,14 @@ export default function SamplePackPageEN() {
                             </div>
                             <span className="text-xs uppercase tracking-[0.2em] text-[#e44c65] font-semibold">02 · Digital &amp; Analog</span>
                             <h3 className="text-xl sm:text-2xl font-light tracking-[0.1em] uppercase text-white mt-2 mb-3">
-                                Nord Drum 3P Synthesis
+                                Electronic &amp; Synth Impulses
                             </h3>
                             <p className="text-sm text-gray-400 leading-relaxed font-light">
-                                Custom synthesized patches from the legendary Nord Drum 3P. Sub drops, modulated percussion clicks, futuristic rim accents, and tight electronic punch transients.
+                                Modulated clicks, hard transients, synthetic sub-impulses, and futuristic electronic drums. Crafted to give every rhythm modern punch and electronic authority.
                             </p>
                             <ul className="mt-4 space-y-2 text-xs text-white/70">
-                                <li className="flex items-center gap-2">✓ Ideal for layering behind acoustic kicks &amp; snares</li>
-                                <li className="flex items-center gap-2">✓ Laser-sharp transient attack &amp; deep sub warmth</li>
+                                <li className="flex items-center gap-2">✓ Perfect for layering behind organic percussion sounds</li>
+                                <li className="flex items-center gap-2">✓ Sharp transient attack &amp; deep sub warmth</li>
                             </ul>
                         </div>
 
@@ -547,16 +561,16 @@ export default function SamplePackPageEN() {
                             <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-[#e44c65] mb-6 group-hover:scale-110 transition-transform">
                                 <Music2 size={24} />
                             </div>
-                            <span className="text-xs uppercase tracking-[0.2em] text-[#e44c65] font-semibold">03 · Acoustic Foundation</span>
+                            <span className="text-xs uppercase tracking-[0.2em] text-[#e44c65] font-semibold">03 · Seamless Unity</span>
                             <h3 className="text-xl sm:text-2xl font-light tracking-[0.1em] uppercase text-white mt-2 mb-3">
-                                Acoustic Drum Elements
+                                Fusion Drum Elements
                             </h3>
                             <p className="text-sm text-gray-400 leading-relaxed font-light">
-                                Tama Starclassic snares, tight hi-hats, and selected Meinl Byzance cymbals. Tracked dry and punchy in Santino's acoustically designed DrumHub studio.
+                                Crisp snares, cohesive hi-hats, and well-balanced kicks. Santino's focus is on sonic fusion: acoustics and electronics mesh together as one cohesive sonic body.
                             </p>
                             <ul className="mt-4 space-y-2 text-xs text-white/70">
-                                <li className="flex items-center gap-2">✓ Multiple velocity layers for authentic playback</li>
-                                <li className="flex items-center gap-2">✓ Mix-ready analog tube warmth (SPL GoldMike MK2)</li>
+                                <li className="flex items-center gap-2">✓ Harmonically aligned, organic frequency profile</li>
+                                <li className="flex items-center gap-2">✓ Mix-ready one-shots: Drop straight into your track</li>
                             </ul>
                         </div>
 
@@ -565,16 +579,16 @@ export default function SamplePackPageEN() {
                             <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-[#e44c65] mb-6 group-hover:scale-110 transition-transform">
                                 <Sparkles size={24} />
                             </div>
-                            <span className="text-xs uppercase tracking-[0.2em] text-[#e44c65] font-semibold">04 · Cinematic &amp; Expansive</span>
+                            <span className="text-xs uppercase tracking-[0.2em] text-[#e44c65] font-semibold">04 · Solo &amp; Groove Accents</span>
                             <h3 className="text-xl sm:text-2xl font-light tracking-[0.1em] uppercase text-white mt-2 mb-3">
-                                Ambient Soundbeds &amp; Drones
+                                Dynamic Accent Hits
                             </h3>
                             <p className="text-sm text-gray-400 leading-relaxed font-light">
-                                Bowed cymbals, shaker sound clouds, and granular spatial reverbs. Perfect as a cinematic atmospheric layer for any track from ambient to melodic techno.
+                                Expressive solo accents, fills, and unexpected transient hits for your arrangements. No drones or static pads – pure, dynamic one-shots.
                             </p>
                             <ul className="mt-4 space-y-2 text-xs text-white/70">
-                                <li className="flex items-center gap-2">✓ Instant width and depth for intros &amp; breakdowns</li>
-                                <li className="flex items-center gap-2">✓ Textures with distinct organic timbres</li>
+                                <li className="flex items-center gap-2">✓ Ideal for solos, rhythmic fills, and sharp accents</li>
+                                <li className="flex items-center gap-2">✓ Looking for loops or basslines? Request them in feedback for Vol. 2!</li>
                             </ul>
                         </div>
                     </div>
@@ -602,21 +616,21 @@ export default function SamplePackPageEN() {
 
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-white/10">
                                     <div className="space-y-2">
-                                        <div className="text-2xl font-bold text-[#e44c65]">1. Download</div>
+                                        <div className="text-2xl font-bold text-[#e44c65]">1. VIP Waitlist</div>
                                         <p className="text-xs text-gray-400 leading-relaxed">
-                                            Sign up below and receive immediate download access to all full-resolution WAV files.
+                                            Sign up below and receive your VIP download link directly by email when the campaign launches.
                                         </p>
                                     </div>
                                     <div className="space-y-2">
                                         <div className="text-2xl font-bold text-white">2. Test in DAW</div>
                                         <p className="text-xs text-gray-400 leading-relaxed">
-                                            Drop the loops and one-shots into your current project in Ableton, Logic, FL Studio or Cubase.
+                                            Drop the one-shots into your current project in Ableton, Logic, FL Studio or Cubase.
                                         </p>
                                     </div>
                                     <div className="space-y-2">
                                         <div className="text-2xl font-bold text-[#e44c65]">3. 2-Min Feedback</div>
                                         <p className="text-xs text-gray-400 leading-relaxed">
-                                            In a few days, I will send you 3 quick survey questions. Your insights shape Volume 2 directly!
+                                            After testing, I will send you 3 quick survey questions. Your insights shape Volume 2 directly!
                                         </p>
                                     </div>
                                 </div>
@@ -638,30 +652,19 @@ export default function SamplePackPageEN() {
 
                                 <div className="space-y-3">
                                     <p className="text-xs uppercase tracking-[0.24em] text-[#e44c65] font-semibold">
-                                        Successfully Unlocked!
+                                        Spot Successfully Reserved!
                                     </p>
                                     <h3 className="text-3xl sm:text-4xl font-light tracking-[0.14em] uppercase text-white">
-                                        Your download is ready
+                                        You are on the VIP Waitlist
                                     </h3>
-                                    <p className="text-sm text-gray-300 max-w-md mx-auto font-light">
-                                        Thank you for your support! Click below to download your complete SYNTHESIS Sample Pack (.ZIP) instantly.
+                                    <p className="text-sm text-gray-300 max-w-md mx-auto font-light leading-relaxed">
+                                        Thank you for your support! The SYNTHESIS Sample Pack will launch alongside the official Instagram campaign. You will receive your personal download link directly in your inbox!
                                     </p>
-                                </div>
-
-                                <div className="pt-4">
-                                    <a
-                                        href="/downloads/SYNTHESIS-Sample-Pack-Santino-Scavelli.zip"
-                                        download="SYNTHESIS-Sample-Pack-Santino-Scavelli.zip"
-                                        className="inline-flex items-center gap-3 px-10 py-5 bg-[#e44c65] text-white text-sm uppercase tracking-[0.18em] font-medium rounded-full shadow-[0_0_35px_rgba(228,76,101,0.5)] hover:shadow-[0_0_50px_rgba(228,76,101,0.8)] hover:bg-[#c43c52] transition-all"
-                                    >
-                                        <Download size={20} />
-                                        <span>Download SYNTHESIS Pack (.ZIP)</span>
-                                    </a>
                                 </div>
 
                                 <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 text-xs text-gray-400 max-w-md mx-auto text-left space-y-1">
                                     <p className="text-white font-medium">What happens next:</p>
-                                    <p>You'll receive a short feedback email from Santino in 3–5 days with 3 quick questions. Enjoy creating!</p>
+                                    <p>As soon as the campaign drops, we will send your download link straight to your email. We look forward to your honest feedback!</p>
                                 </div>
                             </div>
                         ) : (
@@ -669,13 +672,13 @@ export default function SamplePackPageEN() {
                             <div className="space-y-8">
                                 <div className="text-center space-y-3">
                                     <span className="text-xs uppercase tracking-[0.24em] text-[#e44c65] font-semibold">
-                                        Immediate Download
+                                        Exclusive Early Access
                                     </span>
                                     <h3 className="text-3xl sm:text-4xl font-light tracking-[0.14em] uppercase text-white">
-                                        Get SYNTHESIS for Free
+                                        SYNTHESIS VIP Waitlist
                                     </h3>
                                     <p className="text-sm text-gray-400 font-light max-w-lg mx-auto">
-                                        Enter your details below to unlock instant download access. No spam, ever — guaranteed.
+                                        Enter your details below to reserve your priority access for the free early download when the campaign launches.
                                     </p>
                                 </div>
 
@@ -786,7 +789,7 @@ export default function SamplePackPageEN() {
                                             className="mt-1 h-4 w-4 rounded border-white/20 bg-white/5 text-[#e44c65] focus:ring-[#e44c65] cursor-pointer"
                                         />
                                         <label htmlFor="consent-en" className="text-xs text-gray-400 font-light cursor-pointer">
-                                            I agree to receive a single follow-up email in a few days with 3 short feedback questions.
+                                            I agree to receive the download link upon launch and a single follow-up email in a few days with 3 short feedback questions.
                                         </label>
                                     </div>
 
@@ -797,10 +800,10 @@ export default function SamplePackPageEN() {
                                         className="w-full py-4 px-8 bg-[#e44c65] text-white text-xs sm:text-sm uppercase tracking-[0.18em] font-medium rounded-full shadow-[0_0_25px_rgba(228,76,101,0.4)] hover:shadow-[0_0_40px_rgba(228,76,101,0.7)] hover:bg-[#c43c52] transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
                                     >
                                         {loading ? (
-                                            <span>Unlocking Download...</span>
+                                            <span>Reserving Spot...</span>
                                         ) : (
                                             <>
-                                                <span>Unlock Instant Download</span>
+                                                <span>Join VIP Waitlist</span>
                                                 <ArrowRight size={18} />
                                             </>
                                         )}
@@ -839,17 +842,17 @@ export default function SamplePackPageEN() {
                                 What file format are the sounds in?
                             </h4>
                             <p className="text-xs sm:text-sm text-gray-400 font-light leading-relaxed pl-6">
-                                All samples are 24-bit / 48kHz uncompressed WAV files. They drag-and-drop seamlessly into any digital audio workstation (Ableton, Logic, FL Studio, Cubase, Studio One, etc.) or hardware sampler.
+                                All samples are 100% pure one-shot hits in 24-bit / 48kHz uncompressed WAV format. No rigid loops or fixed basslines – giving you complete production freedom in any DAW (Ableton, Logic, FL Studio, Cubase, etc.) or hardware sampler.
                             </p>
                         </div>
 
                         <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-2">
                             <h4 className="text-sm sm:text-base font-medium text-white flex items-center gap-2">
                                 <HelpCircle size={18} className="text-[#e44c65]" />
-                                When and how will I receive the feedback survey?
+                                When will I receive the download link and survey?
                             </h4>
                             <p className="text-xs sm:text-sm text-gray-400 font-light leading-relaxed pl-6">
-                                Around 3 to 5 days after downloading, Santino will send you a brief email containing a link to a 2-minute survey form. Your honest opinions will directly influence upcoming sound pack expansions!
+                                As soon as the Instagram release campaign officially launches, all producers on the VIP waitlist will receive their download link directly via email. Around 3 to 5 days after downloading, you will receive a brief 3-question survey so your ideas can shape Volume 2!
                             </p>
                         </div>
                     </div>
