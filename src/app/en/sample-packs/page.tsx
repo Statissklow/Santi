@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { 
@@ -17,7 +17,10 @@ import {
     ArrowRight,
     Headphones,
     FolderSync,
-    HeartHandshake
+    HeartHandshake,
+    Volume2,
+    VolumeX,
+    Repeat
 } from "lucide-react";
 
 interface DemoTrack {
@@ -27,40 +30,54 @@ interface DemoTrack {
     bpm: string;
     description: string;
     duration: string;
+    audioSrc: string;
 }
 
 const demos: DemoTrack[] = [
     {
         id: 1,
-        title: "01. Cinematic Ethnic Pulse",
-        category: "Hybrid Groove",
-        bpm: "110 BPM",
-        description: "Meinl Darbuka & Frame Drum layered with Nord Drum 3P sub pulses and organic reverb tails.",
-        duration: "0:48",
+        title: "01. Acid Synth Groove",
+        category: "Modular & Acid Synth",
+        bpm: "approx. 124 BPM",
+        description: "Driving modular 303-inspired synth lines, punchy transients, and kinetic groove layers from Santino's hybrid setup.",
+        duration: "0:11",
+        audioSrc: "/audio/demos/acid-synth-groove-124bpm.wav",
     },
     {
         id: 2,
-        title: "02. Deep Ambient Textures",
-        category: "Atmospheres",
-        bpm: "82 BPM",
-        description: "Bowed Cymbals, granular shakers, and lush organic soundbeds for spatial immersion.",
-        duration: "0:36",
+        title: "02. Organic Percussion Pulse",
+        category: "Ethnic & Hybrid",
+        bpm: "approx. 130 BPM",
+        description: "Warm frame drum resonance, organic shaker movement, and articulate acoustic accents with human feel.",
+        duration: "0:06",
+        audioSrc: "/audio/demos/organic-percussion-pulse-130bpm.wav",
     },
     {
         id: 3,
-        title: "03. Modern Afro-Tribal Flow",
-        category: "Acoustic & Ethnic",
-        bpm: "122 BPM",
-        description: "Tama Snare rimshots, Meinl Byzance cymbals, and dynamic riq fills with authentic human micro-timing.",
-        duration: "0:52",
+        title: "03. Industrial Dub Rhythms",
+        category: "Dub & Space",
+        bpm: "approx. 75 BPM",
+        description: "Deep half-time grooves, metallic acoustic spaces, analog tape delays, and heavy sub punch.",
+        duration: "0:08",
+        audioSrc: "/audio/demos/industrial-dub-rhythms-75bpm.wav",
     },
     {
         id: 4,
-        title: "04. Electronic Nord Soundbed",
-        category: "Modular & Synth",
-        bpm: "95 BPM",
-        description: "Frequency modulated percussion clicks, analog transient punch, and deep sub drops.",
-        duration: "0:41",
+        title: "04. Fast Breakbeat Drive",
+        category: "Jungle & Breakbeat",
+        bpm: "approx. 165 BPM",
+        description: "High-octane breakbeat energy, crisp snare ghost notes, and open Meinl Byzance cymbal air.",
+        duration: "0:08",
+        audioSrc: "/audio/demos/fast-breakbeat-drive-165bpm.wav",
+    },
+    {
+        id: 5,
+        title: "05. Lo-Fi Chillhop Kit",
+        category: "Lo-Fi & Downtempo",
+        bpm: "approx. 82 BPM",
+        description: "Dusty vintage tape warmth, mellow kick transients, relaxed rimshots, and intimate textures.",
+        duration: "0:12",
+        audioSrc: "/audio/demos/lo-fi-chillhop-kit-82bpm.wav",
     },
 ];
 
@@ -76,17 +93,78 @@ export default function SamplePackPageEN() {
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Audio Player Simulation State
+    // Real Audio Player State
+    const audioRef = useRef<HTMLAudioElement | null>(null);
     const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const [isMuted, setIsMuted] = useState(false);
+    const [loopTrack, setLoopTrack] = useState(true);
 
     const togglePlay = (index: number) => {
+        if (!audioRef.current) return;
+
         if (currentTrackIndex === index) {
-            setIsPlaying(!isPlaying);
+            if (isPlaying) {
+                audioRef.current.pause();
+                setIsPlaying(false);
+            } else {
+                audioRef.current.play().then(() => setIsPlaying(true)).catch(err => console.error("Audio playback error:", err));
+            }
         } else {
             setCurrentTrackIndex(index);
-            setIsPlaying(true);
+            audioRef.current.src = demos[index].audioSrc;
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().then(() => setIsPlaying(true)).catch(err => console.error("Audio playback error:", err));
         }
+    };
+
+    const handleTimeUpdate = () => {
+        if (audioRef.current) {
+            setCurrentTime(audioRef.current.currentTime);
+        }
+    };
+
+    const handleLoadedMetadata = () => {
+        if (audioRef.current) {
+            setDuration(audioRef.current.duration || 0);
+        }
+    };
+
+    const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!audioRef.current || !duration) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const newTime = Math.max(0, Math.min(duration, (clickX / rect.width) * duration));
+        audioRef.current.currentTime = newTime;
+        setCurrentTime(newTime);
+    };
+
+    const toggleMute = () => {
+        if (audioRef.current) {
+            audioRef.current.muted = !isMuted;
+            setIsMuted(!isMuted);
+        }
+    };
+
+    const handleEnded = () => {
+        if (loopTrack) {
+            if (audioRef.current) {
+                audioRef.current.currentTime = 0;
+                audioRef.current.play().catch(() => {});
+            }
+        } else {
+            const nextIdx = (currentTrackIndex + 1) % demos.length;
+            togglePlay(nextIdx);
+        }
+    };
+
+    const formatTime = (timeInSec: number) => {
+        if (isNaN(timeInSec)) return "0:00";
+        const mins = Math.floor(timeInSec / 60);
+        const secs = Math.floor(timeInSec % 60);
+        return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -258,56 +336,84 @@ export default function SamplePackPageEN() {
                                 Listen to SYNTHESIS
                             </h2>
                             <p className="text-sm sm:text-base text-gray-400 font-light">
-                                All tracks recorded with high-end tube preamps and top microphones. Here are four curated demo stems.
+                                All 5 beats recorded directly from Santino's hybrid setup. Click play to preview immediately in your browser.
                             </p>
                         </div>
+
+                        {/* Hidden HTML5 Audio Element */}
+                        <audio
+                            ref={audioRef}
+                            src={demos[currentTrackIndex].audioSrc}
+                            onTimeUpdate={handleTimeUpdate}
+                            onLoadedMetadata={handleLoadedMetadata}
+                            onEnded={handleEnded}
+                            loop={loopTrack}
+                            preload="metadata"
+                        />
 
                         {/* Player Container */}
                         <div className="max-w-4xl mx-auto bg-white/[0.03] border border-white/10 rounded-3xl p-6 sm:p-10 backdrop-blur-xl shadow-2xl">
                             {/* Track Selector list */}
-                            <div className="space-y-4 mb-8">
+                            <div className="space-y-3.5 mb-8">
                                 {demos.map((demo, idx) => {
                                     const isCurrent = currentTrackIndex === idx;
                                     return (
                                         <div
                                             key={demo.id}
                                             onClick={() => togglePlay(idx)}
-                                            className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-4 ${
+                                            className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-4 group ${
                                                 isCurrent
-                                                    ? "bg-white/[0.07] border-[#e44c65]/60 shadow-[0_0_25px_rgba(228,76,101,0.15)]"
-                                                    : "bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/[0.04]"
+                                                    ? "bg-white/[0.07] border-[#e44c65]/60 shadow-[0_0_25px_rgba(228,76,101,0.18)]"
+                                                    : "bg-white/[0.02] border-white/10 hover:border-white/25 hover:bg-white/[0.05]"
                                             }`}
                                         >
                                             <div className="flex items-center gap-4 min-w-0">
                                                 <button
                                                     type="button"
                                                     aria-label="Play/Pause"
-                                                    className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-transform ${
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        togglePlay(idx);
+                                                    }}
+                                                    className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all ${
                                                         isCurrent && isPlaying
-                                                            ? "bg-[#e44c65] text-white shadow-[0_0_15px_rgba(228,76,101,0.5)] scale-105"
-                                                            : "bg-white/10 text-white hover:bg-white/20"
+                                                            ? "bg-[#e44c65] text-white shadow-[0_0_20px_rgba(228,76,101,0.6)] scale-105"
+                                                            : "bg-white/10 text-white hover:bg-[#e44c65] hover:text-white"
                                                     }`}
                                                 >
                                                     {isCurrent && isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
                                                 </button>
                                                 <div className="min-w-0">
-                                                    <div className="flex items-center gap-2.5">
-                                                        <h4 className="text-sm sm:text-base font-medium text-white truncate">
+                                                    <div className="flex items-center gap-2.5 flex-wrap">
+                                                        <h4 className={`text-sm sm:text-base font-semibold truncate transition-colors ${
+                                                            isCurrent ? "text-white" : "text-white/90 group-hover:text-white"
+                                                        }`}>
                                                             {demo.title}
                                                         </h4>
-                                                        <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-[#e44c65] font-semibold shrink-0">
+                                                        <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#e44c65]/15 text-[#e44c65] border border-[#e44c65]/30 font-bold shrink-0">
                                                             {demo.bpm}
                                                         </span>
+                                                        <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/5 text-white/50 font-medium shrink-0 hidden md:inline-block">
+                                                            {demo.category}
+                                                        </span>
+                                                        {isCurrent && isPlaying && (
+                                                            <span className="inline-flex items-center gap-1 text-[11px] text-[#e44c65] font-semibold animate-pulse shrink-0">
+                                                                <Volume2 size={12} />
+                                                                <span>Playing...</span>
+                                                            </span>
+                                                        )}
                                                     </div>
-                                                    <p className="text-xs text-gray-400 font-light truncate mt-0.5">
+                                                    <p className="text-xs text-gray-400 font-light truncate mt-1">
                                                         {demo.description}
                                                     </p>
                                                 </div>
                                             </div>
 
-                                            <div className="text-right shrink-0 hidden sm:block">
-                                                <span className="text-xs tracking-wider text-white/50 uppercase font-mono">
-                                                    {demo.duration}
+                                            <div className="text-right shrink-0">
+                                                <span className={`text-xs tracking-wider uppercase font-mono px-2.5 py-1 rounded-lg ${
+                                                    isCurrent ? "text-[#e44c65] bg-[#e44c65]/10 font-bold" : "text-white/40 bg-white/5"
+                                                }`}>
+                                                    {isCurrent && isPlaying ? formatTime(currentTime) : demo.duration}
                                                 </span>
                                             </div>
                                         </div>
@@ -315,40 +421,89 @@ export default function SamplePackPageEN() {
                                 })}
                             </div>
 
-                            {/* Simulated Waveform Display */}
-                            <div className="bg-black/40 rounded-2xl p-6 border border-white/10 space-y-3">
-                                <div className="flex items-center justify-between text-xs uppercase tracking-wider text-white/60">
-                                    <span className="flex items-center gap-2">
-                                        <Music2 size={14} className="text-[#e44c65]" />
-                                        <span>Current Track: {demos[currentTrackIndex].title}</span>
-                                    </span>
-                                    <span className="font-mono text-[#e44c65]">
-                                        {isPlaying ? "PLAYING" : "PAUSED"}
-                                    </span>
+                            {/* Active Audio Player & Interactive Waveform Display */}
+                            <div className="bg-black/50 rounded-2xl p-6 sm:p-7 border border-white/10 space-y-4 shadow-inner">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs uppercase tracking-wider text-white/70">
+                                    <div className="flex items-center gap-2.5 min-w-0 truncate">
+                                        <div className={`w-2.5 h-2.5 rounded-full ${isPlaying ? "bg-[#e44c65] animate-ping" : "bg-white/20"}`} />
+                                        <span className="font-semibold text-white truncate">
+                                            {demos[currentTrackIndex].title}
+                                        </span>
+                                        <span className="text-[#e44c65] text-[11px] font-bold">
+                                            ({demos[currentTrackIndex].bpm})
+                                        </span>
+                                    </div>
+
+                                    {/* Player Controls: Time, Loop, Mute */}
+                                    <div className="flex items-center gap-3 shrink-0 self-end sm:self-auto">
+                                        <span className="font-mono text-white/80 text-xs bg-white/5 px-2.5 py-1 rounded-lg">
+                                            {formatTime(currentTime)} / {formatTime(duration || 10)}
+                                        </span>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setLoopTrack(!loopTrack)}
+                                            title={loopTrack ? "Loop enabled (beat repeats)" : "Loop disabled"}
+                                            className={`p-1.5 rounded-lg border transition-colors ${
+                                                loopTrack 
+                                                    ? "bg-[#e44c65]/20 border-[#e44c65]/50 text-[#e44c65]" 
+                                                    : "bg-white/5 border-white/10 text-white/40 hover:text-white"
+                                            }`}
+                                        >
+                                            <Repeat size={14} />
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={toggleMute}
+                                            title={isMuted ? "Unmute" : "Mute"}
+                                            className={`p-1.5 rounded-lg border transition-colors ${
+                                                isMuted 
+                                                    ? "bg-red-500/20 border-red-500/50 text-red-400" 
+                                                    : "bg-white/5 border-white/10 text-white/60 hover:text-white"
+                                            }`}
+                                        >
+                                            {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <div className="h-20 flex items-center justify-center gap-1.5 px-2">
+                                {/* Clickable Interactive Waveform with Scrubbing */}
+                                <div
+                                    onClick={handleSeek}
+                                    className="h-20 flex items-center justify-center gap-1 sm:gap-1.5 px-2 py-1 bg-black/40 rounded-xl border border-white/5 hover:border-white/20 transition-all cursor-pointer group relative select-none"
+                                    title="Click to seek within beat"
+                                >
                                     {Array.from({ length: 48 }).map((_, i) => {
-                                        const baseHeight = ((Math.sin(i * 0.4) + 1.2) * 30 + 15);
-                                        const animHeight = isPlaying ? Math.min(100, baseHeight * (0.8 + Math.random() * 0.5)) : baseHeight * 0.4;
+                                        const progress = duration > 0 ? currentTime / duration : 0;
+                                        const barProgress = i / 48;
+                                        const isPassed = barProgress <= progress;
+
+                                        const baseHeight = ((Math.sin(i * 0.45) + 1.2) * 32 + 18);
+                                        const animHeight = isPlaying 
+                                            ? Math.min(100, baseHeight * (0.85 + (Math.sin((currentTime * 8) + i) * 0.25)))
+                                            : baseHeight * 0.45;
+
                                         return (
                                             <div
                                                 key={i}
-                                                className={`w-1 sm:w-1.5 rounded-full transition-all duration-200 ${
-                                                    isPlaying
-                                                        ? i % 4 === 0
-                                                            ? "bg-[#e44c65]"
-                                                            : "bg-white/70"
-                                                        : "bg-white/20"
+                                                className={`w-1 sm:w-1.5 rounded-full transition-all duration-150 ${
+                                                    isPassed
+                                                        ? "bg-[#e44c65] shadow-[0_0_8px_rgba(228,76,101,0.5)]"
+                                                        : isPlaying
+                                                        ? "bg-white/40"
+                                                        : "bg-white/20 group-hover:bg-white/30"
                                                 }`}
                                                 style={{ height: `${animHeight}%` }}
                                             />
                                         );
                                     })}
                                 </div>
-                                <p className="text-[11px] text-white/30 text-center tracking-widest uppercase">
-                                    Preview Mode · 100% Original WAV recordings from Santino's Hybrid Set
-                                </p>
+
+                                <div className="flex items-center justify-between text-[11px] text-white/40 pt-1">
+                                    <span>Click waveform to scrub</span>
+                                    <span className="text-[#e44c65]/80 font-medium">100% Original WAV Preview</span>
+                                </div>
                             </div>
                         </div>
                     </div>
