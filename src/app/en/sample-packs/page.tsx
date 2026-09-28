@@ -56,7 +56,7 @@ const demos: DemoTrack[] = [
         id: 3,
         title: "03. Industrial Dub Rhythms",
         category: "Dub & Space",
-        bpm: "approx. 75 BPM",
+        bpm: "approx. 150 BPM",
         description: "Deep half-time grooves, metallic acoustic spaces, analog tape delays, and heavy sub punch.",
         duration: "0:08",
         audioSrc: "/audio/demos/industrial-dub-rhythms-75bpm.wav",
