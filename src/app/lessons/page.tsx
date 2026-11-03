@@ -240,64 +240,116 @@ export default function Lessons() {
             {/* ══════════════════════════════════════════════════════════════ */}
             <section className="py-28 sm:py-36 px-6 border-b border-white/5">
                 <div className="max-w-5xl mx-auto">
-                    <div className="text-center mb-20 sm:mb-24">
+                    <div className="text-center mb-16 sm:mb-20">
                         <span className="text-xs sm:text-sm uppercase tracking-[0.26em] text-[#e44c65] font-medium block mb-4 sm:mb-6">
                             Investition
                         </span>
                         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light uppercase tracking-[0.14em] text-white">
-                            Preise
+                            Preise &amp; Honorare
                         </h2>
-                        <p className="text-base sm:text-lg text-white/70 font-light leading-relaxed max-w-xl mx-auto mt-4">
-                            Faire und transparente Konditionen für wöchentlichen Unterricht oder flexible Mehrfachkarten.
+                        <p className="text-base sm:text-lg text-white/70 font-light leading-relaxed max-w-2xl mx-auto mt-4">
+                            Faire und transparente Konditionen gemäß den offiziellen Honorarstandards des Tonkünstlerverbands BW (DTKV).
                         </p>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    {/* Probestunde Callout Banner */}
+                    <div className="mb-8 rounded-3xl p-8 sm:p-10 border bg-[#e44c65]/[0.08] border-[#e44c65]/40 shadow-[0_0_40px_rgba(228,76,101,0.18)] flex flex-col md:flex-row items-center justify-between gap-6 backdrop-blur-sm">
+                        <div className="text-center md:text-left">
+                            <span className="text-xs font-semibold uppercase tracking-[0.24em] text-[#e44c65] block mb-2">
+                                Unverbindlicher Einstieg
+                            </span>
+                            <h3 className="text-2xl sm:text-3xl font-light text-white tracking-wide mb-2 uppercase">
+                                Kostenlose Probestunde
+                            </h3>
+                            <p className="text-white/60 text-xs sm:text-sm font-light max-w-xl leading-relaxed">
+                                Lerne mich und meine Unterrichtskonzepte unverbindlich kennen – vor Ort im DrumHub Studio Mannheim oder weltweit via Zoom.
+                            </p>
+                        </div>
+                        <a
+                            href="mailto:info@santinoscavelli.de?subject=Probestunde"
+                            className="whitespace-nowrap py-3.5 px-8 bg-[#e44c65] text-white font-medium text-xs sm:text-sm uppercase tracking-[0.16em] rounded-full hover:bg-[#c43c52] transition-all hover:scale-105 shadow-[0_0_20px_rgba(228,76,101,0.35)]"
+                        >
+                            Jetzt anfragen →
+                        </a>
+                    </div>
+
+                    {/* 4 Pricing Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                         {[
-                            { label: "Probestunde", price: "Kostenlos", note: "60 Minuten unverbindlich", highlight: true },
-                            { label: "Einzelstunde", price: "60 €", note: "60 Minuten Vor-Ort" },
-                            { label: "Online-Stunde", price: "50 €", note: "60 Minuten via Zoom" },
-                            { label: "5er-Karte", price: "275 €", note: "55 € pro Unterrichtsstunde" },
-                            { label: "10er-Karte", price: "500 €", note: "50 € pro Unterrichtsstunde" },
+                            {
+                                label: "30 Minuten",
+                                price: "50 €",
+                                note: "Kompakt & fokussiert",
+                                subnote: "Vor-Ort oder Online",
+                                mailSubject: "Unterrichtsanfrage 30 Minuten",
+                                btnText: "Buchen",
+                            },
+                            {
+                                label: "45 Minuten",
+                                price: "65 €",
+                                note: "Bewährter Standard",
+                                subnote: "Vor-Ort oder Online",
+                                highlight: true,
+                                badge: "Empfohlen",
+                                mailSubject: "Unterrichtsanfrage 45 Minuten",
+                                btnText: "Buchen",
+                            },
+                            {
+                                label: "60 Minuten",
+                                price: "80 €",
+                                note: "Ausführliche Session",
+                                subnote: "Vor-Ort oder Online",
+                                mailSubject: "Unterrichtsanfrage 60 Minuten",
+                                btnText: "Buchen",
+                            },
+                            {
+                                label: "Zehnerkarte",
+                                price: "Auf Anfrage",
+                                note: "Flexible Mehrfachkarte",
+                                subnote: "Nach individueller Absprache",
+                                mailSubject: "Anfrage Zehnerkarte",
+                                btnText: "Anfragen",
+                            },
                         ].map((item) => (
                             <div
                                 key={item.label}
-                                className={`rounded-3xl p-8 border transition-all duration-300 flex flex-col justify-between ${
+                                className={`rounded-3xl p-6 sm:p-7 border transition-all duration-300 flex flex-col justify-between relative ${
                                     item.highlight
-                                        ? "bg-[#e44c65]/[0.08] border-[#e44c65]/50 shadow-[0_0_40px_rgba(228,76,101,0.2)] col-span-full sm:col-span-2 lg:col-span-1 text-center items-center"
+                                        ? "bg-white/[0.05] border-[#e44c65]/50 shadow-[0_0_30px_rgba(228,76,101,0.15)]"
                                         : "bg-white/[0.03] border-white/10 hover:border-white/20"
                                 }`}
                             >
-                                <div className="w-full mb-6">
-                                    <p className={`text-xs font-medium uppercase tracking-[0.24em] mb-3 ${
-                                        item.highlight ? "text-[#e44c65]" : "text-white/40"
+                                {item.badge && (
+                                    <span className="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-[#e44c65] text-white text-[10px] font-semibold uppercase tracking-wider shadow-lg">
+                                        {item.badge}
+                                    </span>
+                                )}
+                                <div className="w-full mb-6 text-center">
+                                    <p className={`text-xs font-medium uppercase tracking-[0.2em] mb-3 ${
+                                        item.highlight ? "text-[#e44c65]" : "text-white/50"
                                     }`}>
                                         {item.label}
                                     </p>
-                                    <p className={`text-3xl sm:text-4xl font-light tracking-wider mb-2 ${
-                                        item.highlight ? "text-white" : "text-white"
-                                    }`}>
+                                    <p className="text-3xl sm:text-4xl font-light tracking-wider text-white mb-2">
                                         {item.price}
                                     </p>
-                                    <p className="text-white/50 text-xs sm:text-sm font-light">{item.note}</p>
+                                    <p className="text-white/70 text-xs font-light">{item.note}</p>
+                                    <p className="text-white/40 text-[11px] font-light mt-0.5">{item.subnote}</p>
                                 </div>
-                                {item.highlight ? (
-                                    <a
-                                        href="mailto:info@santinoscavelli.de?subject=Probestunde"
-                                        className="w-full py-3.5 px-6 bg-[#e44c65] text-white font-medium text-xs uppercase tracking-[0.16em] rounded-full hover:bg-[#c43c52] transition-all hover:scale-105 shadow-[0_0_20px_rgba(228,76,101,0.35)]"
-                                    >
-                                        Jetzt anfragen →
-                                    </a>
-                                ) : (
-                                    <a
-                                        href="mailto:info@santinoscavelli.de?subject=Unterrichtsanfrage"
-                                        className="w-full py-3 px-6 bg-white/5 border border-white/15 text-white/80 font-medium text-xs uppercase tracking-[0.16em] rounded-full hover:bg-white/10 hover:text-white transition-all text-center"
-                                    >
-                                        Buchen
-                                    </a>
-                                )}
+                                <a
+                                    href={`mailto:info@santinoscavelli.de?subject=${encodeURIComponent(item.mailSubject)}`}
+                                    className={`w-full py-3 px-5 font-medium text-xs uppercase tracking-[0.16em] rounded-full transition-all text-center ${
+                                        item.highlight
+                                            ? "bg-[#e44c65] text-white hover:bg-[#c43c52] shadow-[0_0_15px_rgba(228,76,101,0.3)] hover:scale-105"
+                                            : "bg-white/5 border border-white/15 text-white/80 hover:bg-white/10 hover:text-white"
+                                    }`}
+                                >
+                                    {item.btnText}
+                                </a>
                             </div>
                         ))}
                     </div>
+
                     <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center text-center">
                         <span className="text-white/40 text-xs sm:text-sm font-light tracking-wider">
                             📍 Unterrichtsort: DrumHub Studio, Mannheim
@@ -306,6 +358,21 @@ export default function Lessons() {
                         <span className="text-white/40 text-xs sm:text-sm font-light tracking-wider">
                             💻 Online via Zoom weltweit
                         </span>
+                    </div>
+
+                    <div className="mt-6 text-center">
+                        <p className="text-white/40 text-xs font-light max-w-2xl mx-auto leading-relaxed">
+                            Honorare gemäß den aktuellen{" "}
+                            <a
+                                href="https://www.dtkv-bawue.de"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-white/60 hover:text-[#e44c65] underline transition-colors"
+                            >
+                                Honorarstandards 2026 des Tonkünstlerverbands Baden-Württemberg (DTKV BW)
+                            </a>{" "}
+                            für einzeln vereinbarte und bezahlte Unterrichtsstunden. Zehnerkarten und individuelle Unterrichtsmodelle auf Anfrage.
+                        </p>
                     </div>
                 </div>
             </section>
